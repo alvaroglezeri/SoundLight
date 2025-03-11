@@ -19,5 +19,7 @@ deeprhythm
 
 mido
 #==1.3.2
-#madmom
+madmom
 #==0.16.1
+
+allin1
