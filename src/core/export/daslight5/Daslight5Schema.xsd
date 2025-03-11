@@ -1,0 +1,390 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="DLMFILE">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="CONFIGURATION">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute type="xs:float" name="VIEWZOOM"/>
+                <xs:attribute type="xs:byte" name="VIEWPOSX"/>
+                <xs:attribute type="xs:short" name="VIEWPOSY"/>
+                <xs:attribute type="xs:string" name="TOUCH_DOCK_MANAGER"/>
+                <xs:attribute type="xs:byte" name="TOUCH_ZOOMS"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="PATCHS">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute type="xs:string" name="DATA"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="FIXTUREGROUPS">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="FIXTUREGROUP" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="FIXTURES">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="FIXTURE" maxOccurs="unbounded" minOccurs="0">
+                            <xs:complexType>
+                              <xs:simpleContent>
+                                <xs:extension base="xs:string">
+                                  <xs:attribute type="xs:string" name="DASUID" use="optional"/>
+                                </xs:extension>
+                              </xs:simpleContent>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element type="xs:string" name="BEAMSELECTION"/>
+                  </xs:sequence>
+                  <xs:attribute type="xs:string" name="DASUID" use="optional"/>
+                  <xs:attribute type="xs:string" name="NAME" use="optional"/>
+                  <xs:attribute type="xs:byte" name="TOGGLE_BLACKOUT" use="optional"/>
+                  <xs:attribute type="xs:byte" name="TOGGLE_STROBE" use="optional"/>
+                  <xs:attribute type="xs:byte" name="TOGGLE_FULL" use="optional"/>
+                  <xs:attribute type="xs:byte" name="TOGGLE_EXCLUSIVE_FULL" use="optional"/>
+                  <xs:attribute type="xs:byte" name="TOGGLE_FLASH" use="optional"/>
+                  <xs:attribute type="xs:byte" name="TOGGLE_EXCLUSIVE_FLASH" use="optional"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="SCENES">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="BANK" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="SCENE" maxOccurs="unbounded" minOccurs="0">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="JUMP_TARGET" minOccurs="0">
+                            <xs:complexType>
+                              <xs:simpleContent>
+                                <xs:extension base="xs:string">
+                                  <xs:attribute type="xs:string" name="DASUID"/>
+                                </xs:extension>
+                              </xs:simpleContent>
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="FIXTUREDATAS">
+                            <xs:complexType mixed="true">
+                              <xs:sequence>
+                                <xs:element name="FIXTUREDATA" maxOccurs="unbounded" minOccurs="0">
+                                  <xs:complexType>
+                                    <xs:simpleContent>
+                                      <xs:extension base="xs:string">
+                                        <xs:attribute type="xs:string" name="FIXTURE" use="optional"/>
+                                        <xs:attribute type="xs:string" name="DATA" use="optional"/>
+                                      </xs:extension>
+                                    </xs:simpleContent>
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                              <xs:attribute type="xs:byte" name="NB" use="optional"/>
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="RACKS">
+                            <xs:complexType mixed="true">
+                              <xs:sequence>
+                                <xs:element name="RACK" minOccurs="0">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element name="TIMELINES" minOccurs="0">
+                                        <xs:complexType>
+                                          <xs:sequence>
+                                            <xs:element name="TIMELINE" maxOccurs="unbounded" minOccurs="0">
+                                              <xs:complexType>
+                                                <xs:sequence>
+                                                  <xs:element name="BLOCKS">
+                                                    <xs:complexType mixed="true">
+                                                      <xs:sequence>
+                                                        <xs:element name="BLOCK" maxOccurs="unbounded" minOccurs="0">
+                                                          <xs:complexType>
+                                                            <xs:sequence>
+                                                              <xs:element name="DASTLSUBLINES">
+                                                                <xs:complexType mixed="true">
+                                                                  <xs:sequence>
+                                                                    <xs:element name="DASTLSUBLINE" minOccurs="0">
+                                                                      <xs:complexType>
+                                                                        <xs:sequence>
+                                                                          <xs:element name="DASTLKEYPOINTS">
+                                                                            <xs:complexType mixed="true">
+                                                                              <xs:sequence>
+                                                                                <xs:element name="DASTLKEYPOINT" maxOccurs="unbounded" minOccurs="0">
+                                                                                  <xs:complexType>
+                                                                                    <xs:simpleContent>
+                                                                                      <xs:extension base="xs:string">
+                                                                                        <xs:attribute type="xs:string" name="MSEC" use="optional"/>
+                                                                                        <xs:attribute type="xs:short" name="DASTLPOSITION" use="optional"/>
+                                                                                        <xs:attribute type="xs:byte" name="DASTLTRANSITION" use="optional"/>
+                                                                                        <xs:attribute type="xs:float" name="DASTLDATA" use="optional"/>
+                                                                                        <xs:attribute type="xs:byte" name="DASTLTYPE" use="optional"/>
+                                                                                      </xs:extension>
+                                                                                    </xs:simpleContent>
+                                                                                  </xs:complexType>
+                                                                                </xs:element>
+                                                                              </xs:sequence>
+                                                                              <xs:attribute type="xs:byte" name="DASTLNB" use="optional"/>
+                                                                            </xs:complexType>
+                                                                          </xs:element>
+                                                                        </xs:sequence>
+                                                                        <xs:attribute type="xs:byte" name="DASTLTYPE" use="optional"/>
+                                                                      </xs:complexType>
+                                                                    </xs:element>
+                                                                  </xs:sequence>
+                                                                  <xs:attribute type="xs:byte" name="DASTLNB" use="optional"/>
+                                                                </xs:complexType>
+                                                              </xs:element>
+                                                            </xs:sequence>
+                                                            <xs:attribute type="xs:byte" name="TYPE" use="optional"/>
+                                                            <xs:attribute type="xs:string" name="DASUID" use="optional"/>
+                                                            <xs:attribute type="xs:string" name="NAME" use="optional"/>
+                                                            <xs:attribute type="xs:int" name="START" use="optional"/>
+                                                            <xs:attribute type="xs:int" name="END" use="optional"/>
+                                                            <xs:attribute type="xs:byte" name="POSITION" use="optional"/>
+                                                            <xs:attribute type="xs:short" name="FADEIN" use="optional"/>
+                                                            <xs:attribute type="xs:short" name="FADEOUT" use="optional"/>
+                                                            <xs:attribute type="xs:string" name="DASTLMEDIAPATH" use="optional"/>
+                                                            <xs:attribute type="xs:byte" name="DASTLHEIGHT" use="optional"/>
+                                                            <xs:attribute type="xs:float" name="BPM" use="optional"/>
+                                                            <xs:attribute type="xs:byte" name="ALLOWLOOP" use="optional"/>
+                                                            <xs:attribute type="xs:byte" name="CONFORM_TO_TEMPO" use="optional"/>
+                                                            <xs:attribute type="xs:float" name="SPEED" use="optional"/>
+                                                            <xs:attribute type="xs:string" name="SCENEUUID" use="optional"/>
+                                                          </xs:complexType>
+                                                        </xs:element>
+                                                      </xs:sequence>
+                                                    </xs:complexType>
+                                                  </xs:element>
+                                                </xs:sequence>
+                                                <xs:attribute type="xs:string" name="DASUID" use="optional"/>
+                                                <xs:attribute type="xs:byte" name="NAME" use="optional"/>
+                                                <xs:attribute type="xs:byte" name="INDEX" use="optional"/>
+                                                <xs:attribute type="xs:byte" name="DASTLLOCKED" use="optional"/>
+                                                <xs:attribute type="xs:byte" name="DASTLMUTED" use="optional"/>
+                                                <xs:attribute type="xs:byte" name="DASTLFOLDED" use="optional"/>
+                                              </xs:complexType>
+                                            </xs:element>
+                                          </xs:sequence>
+                                        </xs:complexType>
+                                      </xs:element>
+                                      <xs:element name="EFFECT" minOccurs="0">
+                                        <xs:complexType>
+                                          <xs:sequence>
+                                            <xs:element name="PARAMS">
+                                              <xs:complexType>
+                                                <xs:sequence>
+                                                  <xs:element name="PARAM" maxOccurs="unbounded" minOccurs="0">
+                                                    <xs:complexType mixed="true">
+                                                      <xs:sequence>
+                                                        <xs:element name="COLORS" minOccurs="0">
+                                                          <xs:complexType>
+                                                            <xs:sequence>
+                                                              <xs:element name="COLOR" maxOccurs="unbounded" minOccurs="0">
+                                                                <xs:complexType>
+                                                                  <xs:simpleContent>
+                                                                    <xs:extension base="xs:string">
+                                                                      <xs:attribute type="xs:string" name="VAL" use="optional"/>
+                                                                    </xs:extension>
+                                                                  </xs:simpleContent>
+                                                                </xs:complexType>
+                                                              </xs:element>
+                                                            </xs:sequence>
+                                                            <xs:attribute type="xs:byte" name="NB" use="optional"/>
+                                                          </xs:complexType>
+                                                        </xs:element>
+                                                      </xs:sequence>
+                                                      <xs:attribute type="xs:byte" name="TYPE" use="optional"/>
+                                                      <xs:attribute type="xs:byte" name="ID" use="optional"/>
+                                                      <xs:attribute type="xs:float" name="VAL" use="optional"/>
+                                                    </xs:complexType>
+                                                  </xs:element>
+                                                </xs:sequence>
+                                                <xs:attribute type="xs:byte" name="NB" use="optional"/>
+                                              </xs:complexType>
+                                            </xs:element>
+                                          </xs:sequence>
+                                          <xs:attribute type="xs:byte" name="TYPE" use="optional"/>
+                                          <xs:attribute type="xs:short" name="ID" use="optional"/>
+                                          <xs:attribute type="xs:short" name="DURATION" use="optional"/>
+                                        </xs:complexType>
+                                      </xs:element>
+                                      <xs:element name="MAPPING" minOccurs="0">
+                                        <xs:complexType>
+                                          <xs:simpleContent>
+                                            <xs:extension base="xs:string">
+                                              <xs:attribute type="xs:string" name="NAME"/>
+                                              <xs:attribute type="xs:string" name="DASUID"/>
+                                              <xs:attribute type="xs:byte" name="TYPE"/>
+                                              <xs:attribute type="xs:byte" name="X"/>
+                                              <xs:attribute type="xs:short" name="Y"/>
+                                              <xs:attribute type="xs:short" name="SX"/>
+                                              <xs:attribute type="xs:short" name="SY"/>
+                                              <xs:attribute type="xs:byte" name="ANGLE"/>
+                                              <xs:attribute type="xs:byte" name="LOCKED"/>
+                                            </xs:extension>
+                                          </xs:simpleContent>
+                                        </xs:complexType>
+                                      </xs:element>
+                                      <xs:element name="PRESETS" minOccurs="0">
+                                        <xs:complexType>
+                                          <xs:sequence>
+                                            <xs:element name="PRESET" maxOccurs="unbounded" minOccurs="0">
+                                              <xs:complexType>
+                                                <xs:sequence>
+                                                  <xs:element name="BEAMS">
+                                                    <xs:complexType>
+                                                      <xs:sequence>
+                                                        <xs:element name="BEAM" maxOccurs="unbounded" minOccurs="0">
+                                                          <xs:complexType>
+                                                            <xs:simpleContent>
+                                                              <xs:extension base="xs:string">
+                                                                <xs:attribute type="xs:string" name="FIXTURE" use="optional"/>
+                                                                <xs:attribute type="xs:byte" name="BEAMID" use="optional"/>
+                                                              </xs:extension>
+                                                            </xs:simpleContent>
+                                                          </xs:complexType>
+                                                        </xs:element>
+                                                      </xs:sequence>
+                                                    </xs:complexType>
+                                                  </xs:element>
+                                                </xs:sequence>
+                                                <xs:attribute type="xs:string" name="SSLFIXTURE" use="optional"/>
+                                                <xs:attribute type="xs:byte" name="SSLCHANNEL" use="optional"/>
+                                                <xs:attribute type="xs:byte" name="SSLPRESET" use="optional"/>
+                                                <xs:attribute type="xs:float" name="MIN" use="optional"/>
+                                                <xs:attribute type="xs:float" name="MAX" use="optional"/>
+                                              </xs:complexType>
+                                            </xs:element>
+                                          </xs:sequence>
+                                        </xs:complexType>
+                                      </xs:element>
+                                      <xs:element name="BEAMS" minOccurs="0">
+                                        <xs:complexType>
+                                          <xs:sequence>
+                                            <xs:element name="BEAM" maxOccurs="unbounded" minOccurs="0">
+                                              <xs:complexType>
+                                                <xs:simpleContent>
+                                                  <xs:extension base="xs:string">
+                                                    <xs:attribute type="xs:string" name="FIXTURE" use="optional"/>
+                                                    <xs:attribute type="xs:byte" name="BEAMID" use="optional"/>
+                                                    <xs:attribute type="xs:byte" name="IDSELECTION" use="optional"/>
+                                                  </xs:extension>
+                                                </xs:simpleContent>
+                                              </xs:complexType>
+                                            </xs:element>
+                                          </xs:sequence>
+                                          <xs:attribute type="xs:byte" name="NB" use="optional"/>
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                    <xs:attribute type="xs:byte" name="TYPE" use="optional"/>
+                                    <xs:attribute type="xs:short" name="DURATION" use="optional"/>
+                                    <xs:attribute type="xs:byte" name="DISPLAY_MODE" use="optional"/>
+                                    <xs:attribute type="xs:short" name="GRID_BPM" use="optional"/>
+                                    <xs:attribute type="xs:short" name="GRID_OFFSET" use="optional"/>
+                                    <xs:attribute type="xs:byte" name="EXPAND_RACK" use="optional"/>
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                        <xs:attribute type="xs:string" name="DASUID" use="optional"/>
+                        <xs:attribute type="xs:string" name="NAME" use="optional"/>
+                        <xs:attribute type="xs:string" name="COLOR" use="optional"/>
+                        <xs:attribute type="xs:byte" name="ENABLE" use="optional"/>
+                        <xs:attribute type="xs:byte" name="VISIBLE" use="optional"/>
+                        <xs:attribute type="xs:byte" name="LOOP_MODE" use="optional"/>
+                        <xs:attribute type="xs:byte" name="LOOP" use="optional"/>
+                        <xs:attribute type="xs:byte" name="PLAY_DIRECTION" use="optional"/>
+                        <xs:attribute type="xs:byte" name="PLAY_MODE" use="optional"/>
+                        <xs:attribute type="xs:byte" name="FLASH" use="optional"/>
+                        <xs:attribute type="xs:byte" name="BOUNCE_MODE" use="optional"/>
+                        <xs:attribute type="xs:byte" name="PLAY_TRIGGER" use="optional"/>
+                        <xs:attribute type="xs:short" name="PLAY_DIVISION" use="optional"/>
+                        <xs:attribute type="xs:byte" name="DIMMER" use="optional"/>
+                        <xs:attribute type="xs:byte" name="D_FEATURE" use="optional"/>
+                        <xs:attribute type="xs:float" name="SPEED" use="optional"/>
+                        <xs:attribute type="xs:byte" name="PHASE" use="optional"/>
+                        <xs:attribute type="xs:byte" name="SIZE" use="optional"/>
+                        <xs:attribute type="xs:byte" name="AUTO_RELEASE_END" use="optional"/>
+                        <xs:attribute type="xs:byte" name="JUMP_MODE" use="optional"/>
+                        <xs:attribute type="xs:byte" name="RELEASE_MODE" use="optional"/>
+                        <xs:attribute type="xs:byte" name="RELEASE_PROTECT_MODE" use="optional"/>
+                        <xs:attribute type="xs:byte" name="FADE_IN" use="optional"/>
+                        <xs:attribute type="xs:byte" name="FADE_OUT" use="optional"/>
+                        <xs:attribute type="xs:byte" name="ATTRIBUTEVALUE_MODE" use="optional"/>
+                        <xs:attribute type="xs:byte" name="LTPPRIORITY" use="optional"/>
+                        <xs:attribute type="xs:byte" name="PAUSE" use="optional"/>
+                        <xs:attribute type="xs:string" name="SAIMAGEPATH" use="optional"/>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute type="xs:string" name="DASUID" use="optional"/>
+                  <xs:attribute type="xs:string" name="NAME" use="optional"/>
+                  <xs:attribute type="xs:string" name="COLOR" use="optional"/>
+                  <xs:attribute type="xs:byte" name="COLLAPSED" use="optional"/>
+                  <xs:attribute type="xs:byte" name="PAUSED" use="optional"/>
+                  <xs:attribute type="xs:byte" name="HIDDEN" use="optional"/>
+                  <xs:attribute type="xs:byte" name="NBSCENE" use="optional"/>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="DAS_SELECTIONS">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="SELECTED_LIVE_SCENES">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute type="xs:string" name="DASUID"/>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute type="xs:byte" name="SELECTED_LIVE_BANK"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element type="xs:string" name="SHORTCUTS"/>
+        <xs:element name="TOUCH">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="TOUCHPAGE">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:string" name="DASUID"/>
+                      <xs:attribute type="xs:string" name="NAME"/>
+                      <xs:attribute type="xs:byte" name="TOUCHCONTROL"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element type="xs:string" name="DEVICES"/>
+      </xs:sequence>
+      <xs:attribute type="xs:string" name="TYPE"/>
+      <xs:attribute type="xs:byte" name="VERSION"/>
+      <xs:attribute type="xs:string" name="DASBUILD"/>
+      <xs:attribute type="xs:byte" name="VERSIONFILE"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
