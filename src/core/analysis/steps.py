@@ -1,14 +1,17 @@
-import allin1.analyze
-import allin1.sonify
-import allin1.visualize
+from allin1.analyze import analyze
+from allin1.sonify import sonify
+from allin1.visualize import visualize
+from allin1.typings import AnalysisResult
+from deeprhythm import DeepRhythmPredictor
+
 import librosa
 import numpy as np
-from typing import BinaryIO
-from deeprhythm import DeepRhythmPredictor
-import allin1
-
+from typing import BinaryIO, cast
 
 class KeyAnalysis():
+    """
+    WRITE
+    """
     
     # Define the mapping of chroma features to keys
     CHROMA_TO_KEY = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
@@ -16,11 +19,11 @@ class KeyAnalysis():
     @staticmethod
     def getKey(file: BinaryIO) -> str:
         """
-        DOCUMENT
+        WRITE
         https://medium.com/@oluyaled/detecting-musical-key-from-audio-using-chroma-feature-in-python-72850c0ae4b1
         """   
         # Load the audio file from the beginning: https://github.com/bastibe/python-soundfile/issues/333
-        # PROBLEM: Take note of this
+        # DOCUMENT: Take note of this
         file.seek(0)  
         y, sr = librosa.load(file)
 
@@ -38,8 +41,12 @@ class KeyAnalysis():
     
     
 class BeatAnalysis():
+    
     @staticmethod
     def getBeat_deeprhythm(file: BinaryIO) -> tuple[float, float, list[float]]:
+        """
+    WRITE
+    """
         file.seek(0)
         model = DeepRhythmPredictor(quiet=True)
 
@@ -49,27 +56,34 @@ class BeatAnalysis():
         file.seek(0)
         y, sr = librosa.load(file)
         _, beats = librosa.beat.beat_track(y=y, bpm = bpm)
-        beats = librosa.frames_to_time(beats, sr=sr)
+        beats = librosa.frames_to_time(beats, sr=sr) 
 
-        return bpm, confidence, beats
+        return bpm, confidence, beats # type: ignore
 
     @staticmethod
-    def getBeat_AIO(filepath: str) -> tuple[float, list[float]]:
-        # FIXME: AIO does not support BinaryIO objects.
-        try:
-            print(f'Analyzing...')
-            result: allin1.typings.AnalysisResult = allin1.analyze(filepath, out_dir='./output')
-            print(f'Sonifying...')
-            sonified = allin1.sonify(result, multiprocess=False, out_dir='./output')
-            print(f'Visualizing...')
-            figure = allin1.visualize(result, multiprocess=False, out_dir='./output')
-        except Exception as e:
-            print(e)
-            raise
-        return result        
+    def getBeat_AIO(filepath: str) -> AnalysisResult:
+        """
+    WRITE
+    """
+        # DOCUMENT: AIO does not support BinaryIO objects.
+
+        print(f'Analyzing...')
+        result = analyze(filepath, out_dir='./output', keep_byproducts=True)
+
+        #print(f'Sonifying...')
+        #sonified = allin1.sonify(result, multiprocess=False, out_dir='./output')
+
+        #print(f'Visualizing...')
+        #figure = allin1.visualize(result, multiprocess=False, out_dir='./output')
+
+        # Either this or # type: ignore can be used to avoid warnings
+        return cast(AnalysisResult, result)
     
     @staticmethod
-    def getBeat_librosa(file: BinaryIO) -> float:
+    def getBeat_librosa(file: BinaryIO) -> dict:
+        """
+    WRITE
+    """
         # Load the audio file        
         file.seek(0)
         y, sr = librosa.load(file)
