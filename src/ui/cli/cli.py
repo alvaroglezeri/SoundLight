@@ -27,7 +27,7 @@ class Cli():
         while True:
             self.menu.showOptions()
 
-            option: Command
+            option: ICommand
             try:
                 option = self.menu.askOption()
                 option.execute()

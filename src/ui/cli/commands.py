@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 from ui.cli.consoleUtils import ConsoleUtils
-from core.analysis.fileManager import FileManager
-from core.analysis.songData import SongData
-from core.analysis.analysisDirector import AnalysisDirector, Subscriber
+from core.fileManager import FileManager
+from core.songData import SongData
+from core.analysis.analysisDirector import AnalysisDirector, ISubscriber
 from core.exceptions import NotFoundException
 
-class Command(ABC):
+class ICommand(ABC):
     
     @abstractmethod
     def getDescription(self) -> str:
@@ -20,7 +20,7 @@ class Command(ABC):
         pass
 
 
-class Exit(Command):
+class Exit(ICommand):
     
     def getDescription(self) -> str:
         return f'Exits out of the program'
@@ -32,7 +32,7 @@ class Exit(Command):
         exit()
 
    
-class AddFile(Command):
+class AddFile(ICommand):
 
     def __init__(self) -> None:
         self._fm = FileManager()
@@ -62,7 +62,7 @@ class AddFile(Command):
             self._c.printSuccess(f'File loaded correctly.')
    
 
-class SelectFile(Command):
+class SelectFile(ICommand):
     def __init__(self) -> None:
         self._fm = FileManager()
         self._c = ConsoleUtils
@@ -78,7 +78,7 @@ class SelectFile(Command):
         self._c.printInfo(f'Selecting file.')
 
         if self._fm.hasSelectedFile():
-            self._c.printInfo(f'The file "{self._fm.getSelectedFile().getFileDataSummary()}" is already selected.')
+            self._c.printInfo(f'The file "{self._fm.getSelectedFile()}" is already selected.')
         else:
             self._c.printInfo(f'No file is currently selected.')
         
@@ -93,12 +93,12 @@ class SelectFile(Command):
             
             try:
                 self._fm.selectFile(fileN - 1) # The list in the UI starts with 1
-                selectedFile: SongData = self._fm.getSelectedFile().getFileDataSummary()
+                selectedFile: SongData = self._fm.getSelectedFile()
                 
                 if selectedFile is None:
                     raise NotFoundException()
                 
-                fileSummary = self._fm.getSelectedFile().getFileDataSummary()
+                fileSummary = str(self._fm.getSelectedFile())
                 self._c.printSuccess(f'Selected "{fileSummary}".')
             except NotFoundException:
                 self._c.printWarn(f'The file could not be selected.')
@@ -107,7 +107,7 @@ class SelectFile(Command):
                 self._c.print(e)
 
     def _printAvailable(self) -> None:
-        self.files = self._fm.getFilesSummary()
+        self.files = self._fm.getAllFilesSummary()
         self.nFiles = len(self.files)
 
         if self.nFiles != 0:
@@ -121,7 +121,7 @@ class SelectFile(Command):
             self._c.printWarn(f'There are no files available.')
 
  
-class AnalyzeFile(Command, Subscriber):
+class AnalyzeFile(ICommand, ISubscriber):
     def __init__(self) -> None:
         self._fm = FileManager()
         self._ad = AnalysisDirector()
@@ -129,8 +129,8 @@ class AnalyzeFile(Command, Subscriber):
         self._c = ConsoleUtils
         self._lastNotification = None
 
-    def update(self, notification: Subscriber.Notification) -> None:
-        self._lastNotification: Subscriber.Notification = notification
+    def update(self, notification: ISubscriber.Notification) -> None:
+        self._lastNotification: ISubscriber.Notification = notification
 
     def getDescription(self) -> str:
         return f'Analyzes the selected file.'

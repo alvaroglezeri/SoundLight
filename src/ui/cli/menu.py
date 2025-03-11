@@ -1,13 +1,13 @@
 from ui.cli.consoleUtils import ConsoleUtils
-from ui.cli.commands import Command
+from ui.cli.commands import ICommand
 from core.exceptions import DuplicateElementException, NotFoundException
 
 class Menu:
     def __init__(self) -> None:
         self._c = ConsoleUtils
-        self._options: dict[str, Command] = {}
+        self._options: dict[str, ICommand] = {}
     
-    def addOption(self, o: Command) -> None:
+    def addOption(self, o: ICommand) -> None:
         if o.getKey() not in self._options.keys():
             self._options.update({o.getKey(): o})
         else:
@@ -16,7 +16,7 @@ class Menu:
     #def setPath(self, path: str) -> None:
     #    self._path = path
 
-    def _getOption(self, key) -> Command:
+    def _getOption(self, key) -> ICommand:
         if key in self._options.keys():
             return self._options.get(key)
         else:
@@ -29,7 +29,7 @@ class Menu:
             self._c.print(f'> "{o.getKey()}": {o.getDescription()}')
         self._c.nl()
 
-    def askOption(self) -> Command:
+    def askOption(self) -> ICommand:
         choice = self._c.input(f'Choose an option:')
         
         return self._getOption(choice)
