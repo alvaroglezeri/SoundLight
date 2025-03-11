@@ -1,12 +1,15 @@
 from abc import ABC, abstractmethod
 from core.exceptions import DuplicateElementException, NotFoundException
-from core.analysis.fileManager import FileManager
-from core.analysis.songData import SongData
-from core.analysis.step1 import KeyAnalysis, BeatAnalysis
-from core.logger import DCL, CATEGORY
+from core.logger import DCL, LOG_CAT
 
-class Subscriber(ABC):
-    #DOCUMENT
+from core.analysis.steps import KeyAnalysis, BeatAnalysis
+
+from core.fileManager import FileManager
+from core.songData import SongData
+
+
+class ISubscriber(ABC):
+    #WRITE
 
     #type Notification = dict[str, object]
     
@@ -15,16 +18,16 @@ class Subscriber(ABC):
         pass
 
 class AnalysisDirector():
-    #DOCUMENT
+    #WRITE
 
     def __init__(self) -> None:
-        self._subscribers: list[Subscriber] = []
+        self._subscribers: list[ISubscriber] = []
         self._fm: FileManager = FileManager()
         self._key: KeyAnalysis = KeyAnalysis
         self._selected: SongData = None
         
-    def subscribe(self, subscriber: Subscriber) -> None:
-        #DOCUMENT
+    def subscribe(self, subscriber: ISubscriber) -> None:
+        #WRITE
         if subscriber not in self._subscribers:
             self._subscribers.append(subscriber)
         else:
@@ -35,7 +38,7 @@ class AnalysisDirector():
             subscriber.update(msg)
 
     def analyze(self) -> None:
-        #DOCUMENT
+        #WRITE
         
         self._notify({"step": "1", "msg": "Loading file..."})
         self._loadFile()
@@ -47,38 +50,41 @@ class AnalysisDirector():
         self._beatAnalysis()
         self._notify({"step": "3", "msg": "Analized beat."})
         self._aio()
-        self._notify({"finished": True})
+        self._notify({"finished": True}) 
     
+# ----------------------------------------------------
+
     def _loadFile(self) -> None:
         # Step 1: Load file
         file = self._fm.getSelectedFile()
         
         if file is None:
             self._notify({"step": "1", "msg": "No file selected"})
-            DCL.log(CATEGORY.ERROR, "AnalysisDirector.analyze", f'No file selected!')
+            DCL.log(LOG_CAT.ERROR, f'No file selected!')
             raise NotFoundException(f'No file selected!')
         else:
             self._selected = file
-            self._notify({"step": "1", "msg": f'Selected {file.getTitle()}'})
-            DCL.log(CATEGORY.INFO, "AnalysisDirector.analyze", f'Analyzing {file.getTitle()}')
+            self._notify({"step": "1", "msg": f'Selected {file.title}'})
+            DCL.log(LOG_CAT.INFO, f'Selected "{file.title}"')
 
     def _keyAnalysis(self) -> None:
         # Step 2: Key analysis
         
-        key: str = KeyAnalysis.getKey(self._selected.getFile())
+        key: str = KeyAnalysis.getKey(self._selected.file)
         self._notify({"step": "2", "msg": f'Got key: {key}'})
-        DCL.log(CATEGORY.INFO, "AnalysisDirector._keyAnalysis", f'Found key: {key}')
+        DCL.log(LOG_CAT.INFO, f'Found key: {key}')
           
     def _beatAnalysis(self) -> None:
         # Step 3: Beat analysis
         
-        bpm, confidence, beats = BeatAnalysis.getBeat_deeprhythm(self._selected.getFile())
+        bpm, confidence, beats = BeatAnalysis.getBeat_deeprhythm(self._selected.file)
         self._notify({"step": "3", "msg": f'Got bpm: {bpm}'})
-        # DCL.log(CATEGORY.INFO, "AnalysisDirector._beatAnalysis", f'Beats:')
-        # DCL.log(CATEGORY.INFO, "AnalysisDirector._beatAnalysis", beats)
-        DCL.log(CATEGORY.INFO, "AnalysisDirector._beatAnalysis", f'Found bpm: {bpm} with {confidence*100//1}% confidence.')
+        self._notify({"step": "3", "msg": f'Got beats: {beats}'})
+        #DCL.log(CATEGORY.INFO, f'Beats:')
+        #DCL.log(CATEGORY.INFO, ["{:.2f}".format(float(b)) for b in beats])
+        DCL.log(LOG_CAT.INFO, f'Found bpm: {bpm} with {confidence*100//1}% confidence.')
 
     def _aio(self) -> None:
-        DCL.log(CATEGORY.INFO, "AnalysisDirector._aio", f'AIO Results:')
-        r = BeatAnalysis.getBeat_AIO(self._selected.getPath())
-        print(r)
+        DCL.log(LOG_CAT.INFO, f'AIO Results:')
+        results = BeatAnalysis.getBeat_AIO(self._selected.path)
+        self._fm.addAIOMetadata(results)
