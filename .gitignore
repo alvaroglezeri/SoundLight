@@ -6,3 +6,5 @@ __pycache__
 /demix
 /output
 /spec
+.vscode/launch.json
+.vscode/settings.json
