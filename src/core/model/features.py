@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.core.lightGroups import Group
+from core.model.lightGroups import Group
 
 
 class IFeature(ABC):

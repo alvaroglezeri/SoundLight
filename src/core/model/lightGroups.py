@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from enum import Enum
 
-from core.logger import DCL, LOG_CAT
+from core.logger import Logger, LOG_CAT
 
 
 class IFixture(ABC):
