@@ -3,10 +3,10 @@ from allin1.typings import Segment
 from allin1.config import HARMONIX_LABELS
 from warnings import *
 
-from core.logger import DCL, LOG_CAT
-from core.generation.features import *
+from core.logger import Logger, LOG_CAT
+from core.model.features import *
 from core.fileManager import FileManager
-from core.lightGroups import Group
+from core.model.lightGroups import Group
 
 
 class IGenerationAlgorithm(ABC):
@@ -59,7 +59,7 @@ class FeatureGenerator():
         """
         Arranges features based on the file metadata. Main algorithm for the generator
         """
-        DCL.log(LOG_CAT.INFO, f'Starting feature generation...')
+        Logger.log(LOG_CAT.INFO, f'Starting feature generation...')
         self._generator.loadMetadata(metadata)
 
         # self._loadMetadata()
@@ -71,7 +71,7 @@ class FeatureGenerator():
         """
         Arranges features based on the file metadata. Main algorithm for the generator
         """
-        DCL.log(LOG_CAT.INFO, f'Starting feature generation...')
+        Logger.log(LOG_CAT.INFO, f'Starting feature generation...')
         self._generator.loadMetadata(self._fm.getMetadata())
 
         # self._loadMetadata()

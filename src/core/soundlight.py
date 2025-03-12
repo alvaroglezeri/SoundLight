@@ -6,7 +6,7 @@ from core.analysis.analysisDirector import AnalysisDirector
 from core.generation.featureGenerator import FeatureGenerator
 from core.generation.simpleGenerator import SimpleGenerator
 from core.export.daslight5.Daslight5Exporter import Daslight5Exporter
-from core.lightGroups import *
+from core.model.lightGroups import *
 from core import logger
 
 
@@ -23,9 +23,13 @@ class SoundLight():
         self._ex = Daslight5Exporter()
 
     def _createFixtureGroups(self) -> list[Group]:
-        ret = list()
-        parcan = ParCan()
-        ret.append()
+        ret: list = list()
+        parcan: ParCan = ParCan()
+
+        # TODO
+        ret.append(parcan)
+
+        return ret
 
     def enableLogger(self, setting: bool) -> None:
         logger.enable = setting
