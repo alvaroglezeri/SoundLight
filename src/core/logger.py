@@ -4,6 +4,7 @@ import inspect
 
 enable: bool = True
 
+
 class COLORS:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -21,7 +22,8 @@ class LOG_CAT(Enum):
     INFO = 'INFO'
     WARN = 'WARN'
     SUCCESS = 'SUCC'
-#CATEGORY = Enum('Category', ['ERROR', 'INFO', 'WARN', 'SUCCESS', 'DEBUG'])
+# CATEGORY = Enum('Category', ['ERROR', 'INFO', 'WARN', 'SUCCESS', 'DEBUG'])
+
 
 class ILogger(ABC):
     def __new__(cls):
@@ -32,7 +34,7 @@ class ILogger(ABC):
         if not hasattr(cls, 'instance'):
             cls.instance = super(ILogger, cls).__new__(cls)
         return cls.instance
-    
+
     @abstractmethod
     def log(msg: any) -> None:
         pass
@@ -40,7 +42,7 @@ class ILogger(ABC):
     @abstractmethod
     def log(location: str, msg: any) -> None:
         pass
-    
+
     @abstractmethod
     def log(category: LOG_CAT, location: str, msg: any) -> None:
         pass
@@ -49,39 +51,31 @@ class ILogger(ABC):
     def isEnabled() -> bool:
         pass
 
-class DCL(ILogger):
+
+class Logger(ILogger):
     """
     Debug Console Logger
-    
+
     WRITE
     """
-    """
-    @staticmethod
-    def log(msg: any) -> None:
-        if enable:
-            print(f'[DEBUG]: {msg}') 
-        
-    @staticmethod
-    def log(location: str, msg: any) -> None:
-        if enable:
-            print(f'[DEBUG] at {location}: {msg}')
-            
-    @staticmethod
-    def log(category: CATEGORY, location: str, msg: any) -> None:
-        if enable:
-            print(f'[DEBUG:{category.value}] at {location}: {msg}')
-    """
+
+    _outF: callable = print
+
+    @classmethod
+    def setOutputFunction(cls, output: callable) -> None:
+        cls._outF = output
 
     @staticmethod
     def log(category: LOG_CAT, msg: any) -> None:
         if enable:
-            frame = inspect.currentframe().f_back  # Marco de la función que llamó a log()
-            class_name:str = None
+            # Obtain caller function frame
+            frame = inspect.currentframe().f_back
+            class_name: str = None
 
-            if "self" in frame.f_locals:  # Si es un método de instancia
-                class_name:str = frame.f_locals["self"].__class__.__name__
-            elif "cls" in frame.f_locals:  # Si es un método de clase
-                class_name:str = frame.f_locals["cls"].__name__
+            if "self" in frame.f_locals:  # For instance methods
+                class_name: str = frame.f_locals["self"].__class__.__name__
+            elif "cls" in frame.f_locals:  # For class methods
+                class_name: str = frame.f_locals["cls"].__name__
 
             caller_name: str = frame.f_code.co_name
 
@@ -95,18 +89,15 @@ class DCL(ILogger):
                     label: str = f'{COLORS.BOLD}{COLORS.WARNING}[DEBUG:{cat.value}]{COLORS.ENDC}'
                 case LOG_CAT.SUCCESS as cat:
                     label: str = f'{COLORS.BOLD}{COLORS.OKGREEN}[DEBUG:{cat.value}]{COLORS.ENDC}'
-                
                 case _:
                     label: str = f'[DEBUG]'
-                    
 
+            # Construct final message
             if class_name:
-                print(f'{label} at {class_name}.{caller_name}: {msg}')
+                Logger._outF(f'{label} at {class_name}.{caller_name}: {msg}')
             else:
-                print(f'{label} at {caller_name}: {msg}')
+                Logger._outF(f'{label} at {caller_name}: {msg}')
 
     @staticmethod
     def isEnabled() -> bool:
         return enable
-    
-
