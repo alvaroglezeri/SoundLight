@@ -1,0 +1,40 @@
+Project
+├── 3DView
+│   ├── 3dview.ini
+│   └── fixtures.ini
+├── Editor
+│   ├── 2DView
+│   │   ├── 2dview.ini
+│   │   ├── background.jpg
+│   │   └── fixtures.ini
+│   ├── editor.ini
+│   ├── Generator
+│   │   ├── curves
+│   │   │   ├── default.gcv
+│   │   │   ├── pulse.gcv
+│   │   │   ├── sin.gcv
+│   │   │   ├── sin_6point.gcv
+│   │   │   ├── sin_6pointrev.gcv
+│   │   │   └── triangle.gcv
+│   │   └── curves_rgbcmy
+│   │       └── default.gcv
+│   └── groups.ini
+├── fixtures
+│   ├── 150wLEDBeamMover.txt
+│   ├── parcan_old.txt
+│   └── parcan_old_backup.txt
+├── fixtures.ini
+├── fixtures_backup.ini
+├── Live
+│   ├── live.ini
+│   └── TimeLine
+│       ├── timeline.ini
+│       └── timelines
+│           └── <timeline>.tml
+├── scenes
+│   └── PC_Flash.scex
+├── ScreenControl
+│   └── screencontrol.ini
+├── StandAlone
+│   └── standalone.ini
+└── thelightingcontroller.ini
