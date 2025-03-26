@@ -8,3 +8,12 @@ __pycache__
 /spec
 .vscode/launch.json
 .vscode/settings.json
+src/demix/htdemucs/CamelPhat, Yannis, Foals - Hypercolour/bass.wav
+src/demix/htdemucs/CamelPhat, Yannis, Foals - Hypercolour/drums.wav
+src/demix/htdemucs/CamelPhat, Yannis, Foals - Hypercolour/other.wav
+src/demix/htdemucs/CamelPhat, Yannis, Foals - Hypercolour/vocals.wav
+src/output/bass.wav
+src/output/CamelPhat, Yannis, Foals - Hypercolour.json
+src/spec/CamelPhat, Yannis, Foals - Hypercolour.npy
+.vscode/launch.json
+.vscode/settings.json
