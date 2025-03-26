@@ -1,7 +1,5 @@
 from io import BufferedReader
 from math import ceil
-from tinytag import TinyTag
-import copy
 
 from core.model.features import IFeature
 from core.logger import Logger, LOG_CAT
@@ -35,8 +33,8 @@ class Song():
 
         try:
             title: str = self.title
-            author: str = self._metadata['tinytag.artist'] if self._metadata[
-                'tinytag.artist'] != None else '(No author)'
+            author: str = self._metadata['tinytag']['artist'] if self._metadata[
+                'tinytag']['artist'] != None else '(No author)'
             length: str = secToMin(self._metadata['tinytag.duration'])
             return f'{title} - {author} ({length})'
         except Exception as e:
@@ -54,7 +52,7 @@ class Song():
         Returns the title of the song.
         """
         try:
-            return self._metadata['tinytag.title'][0] if self._metadata['tinytag.title'][0] != None else '(No title)'
+            return self._metadata['tinytag']['title'][0] if self._metadata['tinytag']['title'][0] != None else '(No title)'
         except:
             return '(No title)'
 
