@@ -34,14 +34,14 @@ class Daslight5Exporter():
 
         try:
             exportPath: Path = Path(
-                f'{path.absolute().joinpath(self._fm.getSelectedFile().title)}{_FILE_EXTENSION}')
+                f'{path.absolute().joinpath(self._fm.getSelectedSong().title)}{_FILE_EXTENSION}')
             Logger.log(LOG_CAT.INFO, f'Output file: {exportPath}')
 
             with open(exportPath, 'wt') as output:
                 xml = DVCFileCreator().get()
                 for line in etree.tostring(xml, pretty_print=True, encoding="unicode").splitlines():
-                    print(f'Writing: {line}')
-                    print()
+                    # print(f'Writing: {line}')
+                    # print()
                     output.write(f'{line}\n')
 
         except Exception as e:
