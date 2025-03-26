@@ -32,7 +32,6 @@ class FileManager():
         # WRITE
         self._songs: list[Song] = list()
         self._selected: Song = None
-        self._convert: bool = True
 
     def __init__(self) -> None:
         # Empty __init__, so to not rebuild the singleton
@@ -52,39 +51,20 @@ class FileManager():
 
     # ----- FILE MANAGING -----
 
-    def getLoadedFiles(self) -> list[Song]:
-        return list(self._songs)
+    def getSongs(self) -> list[Song]:
+        return self._songs
 
-    @deprecated
-    def getAllFilesSummary(self) -> list[str]:
-        """
-        Returns a summary of all files loaded 
-        """
-        summary = []
-
-        file: Song
-        for file in self._songs:
-            summary.append(print(file))
-        return summary
-
-    def setConvert(self, mode: bool) -> None:
-        Logger.log(LOG_CAT.INFO,
-                   f'Filetype conversion is {"enabled" if mode else "disabled"}')
-        self._convert = mode
-
-    @deprecated
-    def setConversionFormat(self, formatName: str) -> None:
-        """
-        Sets the conversion format. Must be one of SUPPORTED_FORMATS, else is set to the default.
-        """
-        if formatName in _SUPPORTED_FORMATS:
-            self._conversionFormat = _SUPPORTED_FORMATS[formatName]
+    def closeSong(self, song: Song) -> None:
+        if song not in self._songs:
+            raise NotFoundException()
         else:
-            self._conversionFormat = _SUPPORTED_FORMATS[_DEFAULT_FORMAT]
-        Logger.log(
-            LOG_CAT.INFO, f'Filetype Conversion format set to {self._conversionFormat[1].__qualname__}')
+            try:
+                song.file.close()
+                self._songs.remove(song)
+            except Exception as e:
+                Logger.log(LOG_CAT.ERROR, f'Error closing song: {e}')
 
-    def loadFileFromPath(self, path: str) -> None:
+    def loadSong(self, path: str) -> None:
         """
         WRITE
 
@@ -104,11 +84,11 @@ class FileManager():
             # Checks the codec of the file, and converts to .wav if needed
             file: BufferedReader = open(path, "rb")
 
-            # We obtain the metadata for the file now, because it is lost on file conversion
+            # We obtain the metadata for the file now, because it will be lost on file conversion
             tags: TinyTag = TinyTag.get(file_obj=file)
 
             # Checking file codec and performing conversion if needed
-            file, path = self.checkCodec(file)
+            file, path = self._checkCodec(file)
 
             # Building Song object and adding tags
             song: Song = Song(file)
@@ -150,10 +130,11 @@ class FileManager():
             song (Song): _description_
             tags (TinyTag): _description_
         """
-        for key, value in tags.as_dict().items():
-            song.addMetadata(f'tinytag.{key}', value)
 
-    def checkCodec(self, file: BufferedReader) -> tuple[BufferedReader, str]:
+        tinytagData = tags.as_dict()
+        song.addMetadata(f'tinytag', tinytagData)
+
+    def _checkCodec(self, file: BufferedReader) -> tuple[BufferedReader, str]:
         """Checks the codec of the file and performs a conversion if needed.
 
         Args:
@@ -169,7 +150,7 @@ class FileManager():
             LOG_CAT.INFO, f'Detected codec: {codec.__qualname__}')
 
         # If the codec is not .wav, we convert the file
-        if codec != self._FORMAT[1] and self._convert:
+        if codec != self._FORMAT[1]:
 
             newPath = self._convertFile(file.name)
             Logger.log(LOG_CAT.SUCCESS,
@@ -202,12 +183,12 @@ class FileManager():
 
         return newPath
 
-    # ----- FILE SELECTION -----
+    # ----- SONG SELECTION -----
 
-    def hasSelectedFile(self) -> bool:
+    def hasSelectedFSong(self) -> bool:
         return self._selected is not None
 
-    def selectFile(self, n) -> None:
+    def selectSong(self, n) -> None:
         try:
             self._selected = self._songs[n]
             Logger.log(LOG_CAT.SUCCESS, f'Selected "{self._selected.path}"')
@@ -215,49 +196,9 @@ class FileManager():
             Logger.log(LOG_CAT.ERROR, e)
             raise NotFoundException()
 
-    def getSelectedFile(self) -> Song:
+    def getSelectedSong(self) -> Song:
         # WRITE
         if self._selected is not None:
             return self._selected
         else:
             raise NothingSelectedException(msg="No file selected!")
-
-    # ----- METADATA -----
-    # FIXME: Change responsabilities of class to avoid these methods -> use getSelectedFile
-    @deprecated
-    def addAIOMetadata(self, properties: allin1.typings.AnalysisResult):
-        if not self.hasSelectedFile():
-            raise NothingSelectedException()
-        else:
-            for key, value in properties.__dict__.items():
-                self._selected.addMetadata(f'aio.{key}', value)
-
-    @deprecated
-    def getMetadata(self) -> dict:
-        """
-        Loads metadata for the current song
-        """
-        if not self.hasSelectedFile():
-            raise NothingSelectedException()
-        else:
-            return self._selected.metadata
-
-    # ----- FEATURES -----
-    # FIXME: Change responsabilities of class to avoid these methods -> use getSelectedFile
-    @deprecated
-    def addFeatures(self, features: list[IFeature]) -> None:
-        """
-        WRITE
-        """
-        if not self.hasSelectedFile():
-            raise NothingSelectedException()
-        else:
-            self._selected.addFeatures(features)
-        pass
-
-    @deprecated
-    def getFeatures(self) -> list[IFeature]:
-        if not self.hasSelectedFile():
-            raise NothingSelectedException()
-        else:
-            return self._selected.features

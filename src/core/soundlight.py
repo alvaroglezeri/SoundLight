@@ -34,11 +34,11 @@ class SoundLight():
     def enableLogger(self, setting: bool) -> None:
         logger.enable = setting
 
-    def addFileFromPath(self, path: str) -> None:
-        self._fm.loadFileFromPath(path)
+    def addSongFromPath(self, path: str) -> None:
+        self._fm.loadSong(path)
 
-    def selectFile(self, i: int) -> None:
-        self._fm.selectFile(i)
+    def selectSong(self, i: int) -> None:
+        self._fm.selectSong(i)
 
     def analyze(self) -> None:
         self._ad.analyze()
@@ -48,3 +48,14 @@ class SoundLight():
 
     def export(self, path: str) -> None:
         self._ex.export(Path(path))
+
+    # ----------------
+
+    def _printSongMetadata(self) -> None:
+        for k1, v1 in self._fm.getSelectedSong().metadata.items():
+            if type(v1) == dict:
+                print(f'{k1}: ')
+                for k2, v2 in v1.items():
+                    print(f'  {k2}: {v2}')
+            else:
+                print(f'{k1}: {v1}')

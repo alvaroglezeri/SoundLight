@@ -22,6 +22,7 @@ class LOG_CAT(Enum):
     INFO = 'INFO'
     WARN = 'WARN'
     SUCCESS = 'SUCC'
+    DEBUG = 'DEBG'
 # CATEGORY = Enum('Category', ['ERROR', 'INFO', 'WARN', 'SUCCESS', 'DEBUG'])
 
 
@@ -82,15 +83,17 @@ class Logger(ILogger):
             # Select terminal color
             match category:
                 case LOG_CAT.ERROR as cat:
-                    label: str = f'{COLORS.BOLD}{COLORS.FAIL}[DEBUG:{cat.value}]{COLORS.ENDC}'
+                    label: str = f'{COLORS.BOLD}{COLORS.FAIL}[{cat.value}]{COLORS.ENDC}'
                 case LOG_CAT.INFO as cat:
-                    label: str = f'{COLORS.BOLD}[DEBUG:{cat.value}]{COLORS.ENDC}'
+                    label: str = f'{COLORS.BOLD}[{cat.value}]{COLORS.ENDC}'
                 case LOG_CAT.WARN as cat:
-                    label: str = f'{COLORS.BOLD}{COLORS.WARNING}[DEBUG:{cat.value}]{COLORS.ENDC}'
+                    label: str = f'{COLORS.BOLD}{COLORS.WARNING}[{cat.value}]{COLORS.ENDC}'
                 case LOG_CAT.SUCCESS as cat:
-                    label: str = f'{COLORS.BOLD}{COLORS.OKGREEN}[DEBUG:{cat.value}]{COLORS.ENDC}'
+                    label: str = f'{COLORS.BOLD}{COLORS.OKGREEN}[{cat.value}]{COLORS.ENDC}'
+                case LOG_CAT.DEBUG as cat:
+                    label: str = f'{COLORS.UNDERLINE}[{cat.value}]{COLORS.ENDC}'
                 case _:
-                    label: str = f'[DEBUG]'
+                    label: str = f'[????]'
 
             # Construct final message
             if class_name:

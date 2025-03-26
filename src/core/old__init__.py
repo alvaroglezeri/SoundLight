@@ -1,6 +1,15 @@
+from . import soundlight
+from . import export        # Needs ?
+from . import generation    # Needs ?
+from . import analysis      # Needs SongData, FileManager
+from . import fileManager   # Needs SongData, generation.IFeature
+from .model import song      # Needs generation.IFeature
+from . import logger
+from . import exceptions
 import os
 # Define the __all__ variable
-__all__ = ["fileManager", "analysis", "exceptions", "logger", "soundlight", "songData"]
+__all__ = ["fileManager", "analysis",
+           "exceptions", "logger", "soundlight", "song"]
 
 print(f'Loading package "{__name__}":')
 print(f' > Root package: {__package__}')
@@ -11,18 +20,8 @@ print()
 
 # Import the submodules
 
-from . import exceptions
-from . import logger
-
-from . import songData      # Needs generation.IFeature
-from . import fileManager   # Needs SongData, generation.IFeature
-
-from . import analysis      # Needs SongData, FileManager
-from . import generation    # Needs ?
-from . import export        # Needs ?
 
 # Last one
-from . import soundlight
 """
 from core.fileManager import FileManager
 from core.analysis.analysisDirector import AnalysisDirector
