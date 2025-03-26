@@ -4,6 +4,7 @@ from ui.cli.menu import Menu
 from ui.cli.commands import *
 from ui.cli.consoleUtils import ConsoleUtils
 
+
 class Cli():
 
     def __init__(self):
@@ -12,7 +13,7 @@ class Cli():
         self._c = ConsoleUtils
         self.setUpOptions()
 
-    def setUpOptions(self) -> None:            
+    def setUpOptions(self) -> None:
         self.menu.addOption(AddFile())
         self.menu.addOption(SelectFile())
         self.menu.addOption(AnalyzeFile())
@@ -37,6 +38,3 @@ class Cli():
                 self._c.printError(f'An error has ocurred:')
                 self._c.printInfo(f'Error type: {type(e)}')
                 self._c.print(e)
-            
-                
-            
