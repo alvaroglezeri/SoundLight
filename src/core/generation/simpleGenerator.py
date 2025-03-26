@@ -15,8 +15,8 @@ class SimpleGenerator(IGenerationAlgorithm):
         """
         WRITE
         """
-        self._beats = metadata['aio.beats']
-        self._segments = metadata['aio.segments']
+        self._beats = metadata['aio']['beats']
+        self._segments = metadata['aio']['segments']
 
     def generateTransitionFeatures(self) -> list[IFeature]:
         """

@@ -55,6 +55,11 @@ class FeatureGenerator():
         for group in fixtureGroups:
             self._generator.addFixtureGroup(group)
 
+    def loadMetadata(self, metadata: dict) -> None:
+        Logger.log(LOG_CAT.INFO, f'Loading metadata...')
+        print()
+        print(metadata)
+
     def generate(self, metadata: dict) -> None:
         """
         Arranges features based on the file metadata. Main algorithm for the generator
@@ -62,18 +67,5 @@ class FeatureGenerator():
         Logger.log(LOG_CAT.INFO, f'Starting feature generation...')
         self._generator.loadMetadata(metadata)
 
-        # self._loadMetadata()
-
-        self._fm.addFeatures(self._generator.generateTransitionFeatures())
-
-    @deprecated
-    def generate(self) -> None:
-        """
-        Arranges features based on the file metadata. Main algorithm for the generator
-        """
-        Logger.log(LOG_CAT.INFO, f'Starting feature generation...')
-        self._generator.loadMetadata(self._fm.getMetadata())
-
-        # self._loadMetadata()
-
-        self._fm.addFeatures(self._generator.generateTransitionFeatures())
+        self._fm.getSelectedSong().addFeatures(
+            self._generator.generateTransitionFeatures())

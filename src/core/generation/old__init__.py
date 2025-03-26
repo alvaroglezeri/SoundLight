@@ -1,3 +1,8 @@
+from core.generation import simpleGenerator   #
+from core.model import lightGroups
+from core.generation import featureGenerator  # Needs FileManager, features
+# Needs lightGroup, featureGenerator
+from core.model import features
 import os
 # Define the __all__ variable
 __all__ = ["features", "featureGenerator", "lightGroups", "simpleGenerator"]
@@ -10,9 +15,3 @@ for m in __all__:
 print()
 
 # Import the submodules
-
-from src.core import lightGroups       
-from core.generation import features          # Needs lightGroup, featureGenerator
-from core.generation import featureGenerator  # Needs FileManager, features
-
-from core.generation import simpleGenerator   # 
