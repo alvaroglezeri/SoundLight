@@ -1,3 +1,4 @@
+import zlib
 import lxml.etree as etree
 from pathlib import Path
 from lxml.etree import Element as NewElement
@@ -55,6 +56,44 @@ class DVCFileCreator():
         """
         return self.dlmFile
 
+    def _deflate(element: str | XMLElement, output: str = 'base64') -> str:
+        """Returns the encoded, deflated string in the correct format
+
+        DOCUMENT: All problems encountered with the Inflate/Deflate methods
+
+        Args:
+            element (str | XMLElement): _description_
+            output (str, optional): _description_. Defaults to 'base64'.
+
+        Returns:
+            str: _description_
+        """
+
+        match element:
+            case str():
+                element: str
+                data: str = element.replace(' ', '')
+                # Remove zlib header and checksum, important for correct compression
+                data: bytes = zlib.compress(data.encode('utf-8'))[2:-4]
+            case XMLElement():
+                element: XMLElement
+                data: bytes = etree.tostring(
+                    element, xml_declaration=True, encoding='utf-8')
+                # Remove zlib header and checksum, important for correct compression
+                data: bytes = zlib.compress(data)[2:-4]
+
+        # Add Daslight header and compose full data packet
+        header = bytes.fromhex('00000133')
+        full_data = header + data
+
+        match output:
+            case 'base64':
+                pass
+            case 'hex':
+                return full_data.hex()
+            case _:
+                pass
+
     def _createElement(self, name: str, attributes: dict | None) -> XMLElement:
         """
         Creates a new Element and adds all attributes passed
@@ -77,12 +116,27 @@ class DVCFileCreator():
         WRITE
         """
 
+        dock_manager_data = '''
+        <?xml version="1.0" encoding="UTF-8"?>
+        <QtAdvancedDockingSystem Version="1" UserVersion="0" Containers="1">
+            <Container Floating="0">
+                <Splitter Orientation="-" Count="1">
+                    <Area Tabs="1" Current="Page 1">
+                        <Widget Name="Page 1" Closed="0"/>
+                    </Area>
+                    <Sizes>
+                        18 
+                    </Sizes>
+                </Splitter>
+            </Container>
+        </QtAdvancedDockingSystem>'''
+
         if not attribs:
             attribs = {
                 'VIEWZOOM': '0.75',
                 'VIEWPOSX': '-90',
                 'VIEWPOSY': '250',
-                'TOUCH_DOCK_MANAGER': '0000013378da758f4b0fc2201084effe8a0d77adde3c20c6d478f4115f672c9b86d882816da3fe7a976ab879627686fd06e4f2d936d06388d6bb85984da602d055de58572fc4f9b419cfc552c903ad4caf5d8566edab3b67c757246ce19217059c23863c33a6f48eb475eca458c93cc3a6f19a868229fbc7476389d8de058b7c8506c038013a47dfdd55400d277d1b50507621608af6ba4648f9d59a1a09b6bac5ec42d9f8882695144a1609c165f68d51cde6208bafe4f3d7cf323f91f59f2fabd107e73f6544',
+                'TOUCH_DOCK_MANAGER': self._deflate(),
                 'TOUCH_ZOOMS': '1',
             }
 
