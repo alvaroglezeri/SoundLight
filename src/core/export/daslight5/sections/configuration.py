@@ -2,26 +2,28 @@ import zlib
 import lxml.etree as etree
 from lxml.etree import _Element as XMLElement
 
+from core.conf import Conf
 from core.model.song import Song
-from core.export.daslight5.Daslight5Creator import createElement, Section
+from core.export.daslight5.Daslight5Exporter import create_element, Section
 
 
 class Configuration(Section):
+    """CONFITURATION element in the DLM file.
+    """
 
     def __init__(self, dlmfile: XMLElement):
         self.dlmfile = dlmfile
 
     @staticmethod
-    def _deflateTouchDock(element: str | XMLElement) -> str:
-        """Returns the encoded, deflated Touch Control data in the correct format
-        DOCUMENT
-        WRITE
+    def _deflate_touchdock(element: str | XMLElement) -> str:
+        """Returns the encoded, deflated Touch Control data in the correct format.
+        DOCUMENT: This had to be 
 
         Args:
-            element (str | XMLElement): _description_
+            element (str | XMLElement): XMLElement to deflate.
 
         Returns:
-            str: _description_
+            str: Deflated string in hexadecimal format.
         """
 
         match element:
@@ -43,8 +45,10 @@ class Configuration(Section):
         return full_data.hex()
 
     def write(self, song: Song) -> XMLElement:
-        """
-        WRITE
+        """Crafts the XMLElement CONFIGURATION, for the .dvc file.
+
+        Args:
+            song (Song): Song for which to create the configuration. Currently ignored.
         """
 
         touch_dock_manager_data = f"""
@@ -52,18 +56,16 @@ class Configuration(Section):
         <QtAdvancedDockingSystem Version="1" UserVersion="0" Containers="0">
         </QtAdvancedDockingSystem>"""
 
+        data: dict = Conf()['export']['daslight5']['configuration']
+
         attribs = {
-            "VIEWZOOM": "1",
-            "VIEWPOSX": "200",  # Center of the 2D view for 1080p, varies with resolution
-            "VIEWPOSY": "100",
-            "TOUCH_DOCK_MANAGER": self._deflateTouchDock(touch_dock_manager_data),
-            "TOUCH_ZOOMS": "1",
+            "VIEWZOOM": data['VIEWZOOM'],
+            "VIEWPOSX": data['VIEWPOSX'],
+            "VIEWPOSY": data['VIEWPOSY'],
+            "TOUCH_DOCK_MANAGER": self._deflate_touchdock(touch_dock_manager_data),
+            "TOUCH_ZOOMS": data['TOUCH_ZOOMS'],
         }
 
-        if song:
-           # For now, we can ignore any data in the provided dict
-            ...
-
-        ret: XMLElement = createElement("CONFIGURATION", attribs)
+        ret: XMLElement = create_element("CONFIGURATION", attribs)
 
         return ret
