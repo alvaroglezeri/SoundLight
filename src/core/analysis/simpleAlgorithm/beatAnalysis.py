@@ -3,16 +3,23 @@ import numpy as np
 from deeprhythm import DeepRhythmPredictor
 
 
-from typing import BinaryIO
+from typing import BinaryIO, List
 
 
 class BeatAnalysis():
+    """Performs beat, tempo and BPM detection
+    """
 
     @staticmethod
-    def getBeat_deeprhythm(file: BinaryIO) -> tuple[float, float, list[float]]:
+    def get_beat_deeprhythm(file: BinaryIO) -> tuple[float, float, List[float]]:
+        """Gets the beat timings of the file using DeepRhythm.
+
+        Args:
+            file (BinaryIO): Loaded file.
+
+        Returns:
+            tuple[float, float, List[float]]: BPM, confidence % and list with the timestamps for the beats.
         """
-    WRITE
-    """
         file.seek(0)
         model = DeepRhythmPredictor(quiet=True)
 
@@ -27,9 +34,14 @@ class BeatAnalysis():
         return bpm, confidence, beats  # type: ignore
 
     @staticmethod
-    def getBeat_librosa(file: BinaryIO) -> dict:
-        """
-        WRITE
+    def get_beat_librosa(file: BinaryIO) -> dict:
+        """Gets the beat timings of the file using Librosa's beat_track and plp methods.
+
+        Args:
+            file (BinaryIO): Loaded file.
+
+        Returns:
+            dict: For key 'beat_track', the BPM and beats. For key 'plp', the beats
         """
         # Load the audio file
         file.seek(0)

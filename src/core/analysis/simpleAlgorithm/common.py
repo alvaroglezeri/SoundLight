@@ -1,6 +1,8 @@
+from typing import List
 from deprecated import deprecated
 from pathlib import Path
 from datetime import datetime
+from collections.abc import Callable
 
 from matplotlib import gridspec, pyplot as plt
 import librosa
@@ -10,16 +12,20 @@ from scipy.signal import argrelextrema, find_peaks_cwt, find_peaks
 import soundfile as sf
 from IPython.display import Audio
 
+from core.conf import Conf
 from core.model.song import Song
 from core.logger import Logger, LOG_CAT
 
 
 class Common():
+    """Contains useful functions for audio analysis. Mainly used in BassAnalysis.
+    This class should either be refactored in the future, to make it more reusable; or removed and its code distributed among the classes that use it, if it is too specific.
+    """
 
     @staticmethod
-    def computeAttribs(song: Song, stem: str) -> dict:
+    def compute_attribs(song: Song, stem: str) -> dict:
         """
-        WRITE
+        Computes the required attributes for the song, given the stem under analysis.
 
         Args:
             song (soundlight.model.song.Song): Song data
@@ -28,53 +34,56 @@ class Common():
         Returns:
             dict: _description_
         """
-        attribs = {}
+        attribs: dict = {}
 
         # > TinyTag metadata
-        attribs['track_length'] = song.metadata['tinytag']['duration']
-        attribs['sr'] = song.metadata['tinytag']['samplerate'] if song.metadata['tinytag']['samplerate'] else None
-        attribs['bpm'] = song.metadata['tinytag']['bpm'][0] if song.metadata['tinytag']['bpm'][0] else song.metadata['aio']['bpm']
+        attribs['track_length'] = song['metadata']['tinytag']['duration']
+        attribs['sr'] = song['metadata']['tinytag']['samplerate'] if song['metadata']['tinytag']['samplerate'] else None
+        if 'bpm' in song['metadata']['tinytag'] and song['metadata']['tinytag']['bpm'][0]:
+            attribs['bpm'] = song['metadata']['tinytag']['bpm'][0]
+        else:
+            attribs['bpm'] = song['metadata']['aio']['bpm']
+
+        # attribs['bpm'] = song['metadata']['tinytag']['bpm'][0] if song['metadata']['tinytag']['bpm'] else song['metadata']['aio']['bpm']
 
         # > AIO metadata
-        attribs['downbeats'] = song.metadata['aio']['downbeats']
-        attribs['phrases'] = song.metadata['aio']['segments']
-        attribs['stem_path'] = song.metadata['aio']['demucs'][stem]
+        attribs['downbeats'] = song['metadata']['aio']['downbeats']
+        attribs['phrases'] = song['metadata']['aio']['segments']
+        attribs['stem_path'] = song['metadata']['aio']['demucs'][stem]
 
         # Calculate samples per beat as time signature 4/4
         attribs['beat_sample_length'] = (
-            (attribs['sr'] * 60) / int(attribs['bpm'])) * 4
+            (attribs['sr'] * 60) / int(attribs['bpm'])) * 4  # type: ignore
 
         return attribs
 
     @staticmethod
     def load(attribs: dict) -> tuple[array, int]:
-        """
-        WRITE
+        """Loads a song from its path.
 
         Args:
-            attribs (dict): _description_
+            attribs (dict): Must contain a key 'stem_path' with the path to the song.
 
         Returns:
-            array: _description_
-            int: _description_
+            array: Song data
+            int: Sample rate
         """
         # Load stem
         y, sr = librosa.load(
             attribs['stem_path'], sr=attribs['sr'])
 
-        return y, sr
+        return y, int(sr)
 
     @staticmethod
-    def getRMS(data: array, rmsParams: dict | None = None) -> array:
-        """
-        WRITE
+    def get_rms(data: array, rmsParams: dict | None = None) -> array:
+        """Calculates the RMS profile for the data.
 
         Args:
-            data (array): _description_
+            data (array): Data for which to calculate RMS.
             rmsParams (dict): 'frame_length' and 'hop_length' required, else runs with 2048 and 512.
 
         Returns:
-            array: _description_
+            array: RMS data. The number of samples is always smaller than the original.
         """
         if rmsParams:
             return librosa.feature.rms(y=data, frame_length=rmsParams['frame_length'], hop_length=rmsParams['hop_length'])[0]
@@ -83,6 +92,15 @@ class Common():
 
     @staticmethod
     def scale(data: array, scale: tuple[int, int] = (0, 1)) -> array:
+        """Linearly scales the given data between the specified minimum and maximum values.
+
+        Args:
+            data (array): Data to scale.
+            scale (tuple[int, int], optional): Tuple containing the minimum and maximum to scale. Defaults to (0, 1).
+
+        Returns:
+            array: _description_
+        """
         min = scale[0]
         max = scale[1]
         data_min = np.min(data)
@@ -91,17 +109,8 @@ class Common():
         return ((data - data_min) / (data_max - data_min)) * (max - min) + min
 
     @staticmethod
-    def timestampToIndexOf(data: array, timestamps: array, data_duration: float) -> array:
+    def timestamp_to_index_of(data: array, timestamps: array, data_duration: float) -> array:
         """Converts a list of timestamps into a list of indexes of `data`. Takes each timestamp from `timestamps` and converts it into the corresponding index of data, such that it aligns.
-
-        WRITE
-        Args:
-            data (array): _description_
-            timestamps (array): _description_
-            data_duration (float): _description_
-
-        Returns:
-            array: _description_
         """
         ret = []
 
@@ -113,7 +122,7 @@ class Common():
         return np.asarray(ret)
 
     @staticmethod
-    def getPeakIndexes(data: array, peakArgs: dict | None = None, peakFunction: str = 'argrelextrema') -> tuple[array, array]:
+    def get_peak_indexes(data: array, peakArgs: dict | None = None, peakFunction: str = 'argrelextrema') -> tuple[array, array]:
         """Obtains the indexes of peaks, based on the thresholds and the peak function chosen.
 
         Args:
@@ -144,29 +153,57 @@ class Common():
         return peaks_i, valleys_i
 
     @staticmethod
-    def filterWith(data: array, data_i: array, filter: callable) -> array:
-        ret = []
+    def filter_with(data: array, filter: Callable, data_i: array | None = None) -> array:
+        """Filters an array of data given the filtering function provided.
 
-        for i in data_i:
-            if filter(data, i):
-                ret.append(i)
+        Args:
+            data (array): Data to filter.
+            filter (Callable): Filter function, that takes as parameter a single element of ``data``
+            data_i (array | None, optional): Array of specific indexes to filter. Defaults to None (filter all elements).
+
+        Returns:
+            array: Array with only the elements for which ``filter`` returns True.
+        """
+        ret = []
+        if data_i:
+            for i in data_i:
+                if filter(data, i):
+                    ret.append(i)
+        else:
+            for i in range(len(data)):
+                if filter(data, i):
+                    ret.append(i)
 
         return np.asarray(ret)
 
     @staticmethod
-    def filterThresholds(data: array, filter: dict, maxima_i: array | None = None, minima_i: array | None = None) -> tuple[array, array] | array | None:
+    @deprecated
+    def filter_thresholds(data: array, filter: dict, maxima_i: array | None = None, minima_i: array | None = None) -> tuple[array, array] | array | None:
+        """DEPRECATED: Use filterWith()
+        Filters an array of data given the 'high' and 'low' values on the filter.
+
+        Args:
+            data (array): _description_
+            filter (dict): _description_
+            maxima_i (array | None, optional): _description_. Defaults to None.
+            minima_i (array | None, optional): _description_. Defaults to None.
+
+        Returns:
+            tuple[array, array] | array | None: _description_
+        """
 
         # TODO: Refactor to receive only one array and to use a comparator
 
         # Filter for high and low threshold
         if maxima_i is not None:
-            maxima_i = [i for i in maxima_i if data[i] >= filter['high']]
+            maxima_i = [i for i in maxima_i if data[i]
+                        >= filter['high']]  # type: ignore
             # maxima_i = np.where(data[maxima_i] >= thresholds['high'])
         if minima_i is not None:
-            minima_i = [i for i in minima_i if data[i] <= filter['low']]
+            minima_i = [i for i in minima_i if data[i]
+                        <= filter['low']]  # type: ignore
             # minima_i = np.where(data[minima_i] <= thresholds['low'])
 
-        # print(f'Lengths after: {len(maxima_i)}, {len(minima_i)}')
         if maxima_i is not None and minima_i is not None:
             return maxima_i, minima_i
         elif maxima_i is not None:
@@ -177,8 +214,21 @@ class Common():
             return None
 
     @staticmethod
-    def _localCompare(i: int, y: array, maxima_i: array, minima_i: array, distance: float) -> bool:
-        lmax: float = y[maxima_i[i]]
+    @deprecated
+    def _local_compare(i: int, y: array, maxima_i: array, minima_i: array, distance: float) -> bool:
+        """DEPRECATED
+
+        Args:
+            i (int): _description_
+            y (array): _description_
+            maxima_i (array): _description_
+            minima_i (array): _description_
+            distance (float): _description_
+
+        Returns:
+            bool: _description_
+        """
+        lmax: float = y[maxima_i[i]]  # type: ignore
 
         # Checking out of bounds:
         if i < 1 or i > (len(minima_i)-1):
@@ -197,16 +247,18 @@ class Common():
             return True
 
     @staticmethod
-    def split(audio: np.ndarray, start_indexes: list[int]) -> tuple[list[array], list[array]]:
+    def split(audio: np.ndarray, start_indexes: List[int]) -> tuple[List[array], List[array]]:
         """Splits the audio into sections, according to the start indexes for the sections, and returns a list of arrays, with each array corresponding to a section.
 
         Args:
             data (np.ndarray): The audio data time series
-            start_indexes (list[int]): Indexes where the section starts
+            start_indexes (List[int]): Indexes where the section starts
 
         Returns:
-            list[array], list[array]: list of np.ndarrays. Each array in the list contains one section. The first list contains the values, the second contains the indexes relative to the original data
+            List[array], List[array]: list of np.ndarrays. Each array in the list contains one section. The first list contains the values, the second contains the indexes relative to the original data
         """
+
+        # TODO: This could be coded cleaner with the zip() method
 
         ret = []    # Samples
         ret_i = []  # Sample indexes
@@ -231,19 +283,27 @@ class Common():
         ret.append(section)
         ret_i.append(section_is)
 
+        # if len(ret) == len(ret_i):
+        #   return zip(ret_i, ret)
+        # else:
+
         return ret, ret_i
 
     @staticmethod
-    def display(data: array, peaks_i: array | None = None, valleys_i: array | None = None, thresholds: dict | list | None = None, section_i: dict | None = None, figsize: tuple[int, int] = (36, 3), save: bool = False, reg_line: np.poly1d | bool | None = None):
+    def display(data: array, peaks_i: array | None = None, valleys_i: array | None = None, thresholds: dict | list | None = None, section_i: dict | None = None, figsize: tuple[int, int] = (36, 3), save: Path | None = None, reg_line: np.poly1d | bool | None = None):
         """_summary_
 
+        ADisplays the results.
+
         Args:
-            data (array): _description_
-            maxima_indexes (array): _description_
-            minima_indexes (array | None, optional): _description_. Defaults to None.
-            thresholds (dict | None, optional): _description_. Defaults to None.
-            section_dict (dict | None, optional): _description_. Defaults to None.
+            data (array): Data to display.
+            maxima_indexes (array): Indexes of the peaks.
+            minima_indexes (array | None, optional): Indexes of the valleys.
+            thresholds (dict | None, optional): Thresholds used.
+            section_dict (dict | None, optional): Contains the song sections.
             figsize (tuple(int, int), optional): Dimensions of the figure.
+            save (Path | None, optional): If present, path in which to save the rendered image.
+            reg_line (np.poly1d | bool | None, optional): Regression line.
         """
 
         Logger.log(LOG_CAT.INFO, f'Visualizing data...')
@@ -255,6 +315,7 @@ class Common():
         if np.max(data) != 1.0 or np.min(data) != 0:
             Logger.log(
                 LOG_CAT.WARN, f'Data does not appear to be normalized. Plot can be innacurate.')
+            pass
         plt.ylim(0, 1.1)
         plt.ylabel('Data')
 
@@ -279,7 +340,8 @@ class Common():
         # Print thresholds
         if thresholds is not None:
             if type(thresholds) is list:
-                Logger.log(LOG_CAT.INFO, 'Plotting section thresholds...')
+                Logger.log(
+                    LOG_CAT.INFO, 'Plotti_summary_ng section thresholds...')
 
                 for section in thresholds:
                     if 'low' in section:
@@ -301,6 +363,7 @@ class Common():
             else:
                 Logger.log(
                     LOG_CAT.WARN, f'Unexpected object for `thresholds`: {type(thresholds)}')
+                pass
 
         # Print section
         if section_i is not None:
@@ -328,33 +391,43 @@ class Common():
                 plt.plot(d, reg_line(d), color='b')
 
         # Save figure:
-        if save:
+        if save is not None:
             Logger.log(LOG_CAT.INFO, 'Saving to file...')
-            plt.savefig(
-                f'/home/alvaro/Escritorio/SoundLight/SoundLight/output/bass_{datetime.now()}.pdf')
+            plt.savefig(f'{save}/{datetime.now()}.pdf')
 
         Logger.log(LOG_CAT.SUCCESS, f'Finished visualizing.')
 
     @staticmethod
-    def sonify(data: array, sr: int, peaks: array | None = None,  save: bool = False) -> Audio:
+    def sonify(data: array, sr: int, peaks: array | None = None,  save: Path | None = None) -> Audio:
+        """Sonifies the peaks in the audio.
+
+        Args:
+            data (array): Original audio.
+            sr (int): Sample rate of the audio.
+            peaks (array | None, optional): Peaks to show.
+            save (Path | None, optional): If present, path in which to save the sonified audio.
+
+        Returns:
+            Audio: _description_
+        """
         if peaks is None:
             return Audio(data=data, rate=sr)
         else:
-
+            peaks = np.array([int(f) for f in peaks])
             newdata: array = np.copy(data)
             beep_duration = 0.2  # 200ms
+
             # Convert duration to samples
             beep_samples = int(beep_duration * sr)
             beep_sound = librosa.tone(
                 1000, sr=sr, duration=beep_duration) * 0.25
 
             for peak_i in peaks:
-                end_i = min(peak_i + beep_samples, len(newdata))
+                end_i = int(min(peak_i + beep_samples, len(newdata)))
                 # Add beep to the original signal
                 newdata[peak_i:end_i] += beep_sound[: end_i - peak_i]
 
             if save:
-                sf.write(
-                    r"/home/alvaro/Escritorio/SoundLight/SoundLight/output/bass.wav", newdata, sr)
+                sf.write(save, newdata, sr)
 
             return Audio(data=newdata, rate=sr)

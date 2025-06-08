@@ -1,7 +1,7 @@
 # ARACrypt implementation (https://www.codeproject.com/articles/2329/aracrypt-a-crypto-class) in Python,
 # based on the original source and in the C# implementation by HakanL (https://gist.github.com/HakanL/f67fb9452d086856f105d64bc13a3f46)
 # Author: Álvaro G.E. (https://github.com/alvaroglezeri)
-# Version: v.1.1
+# Version: v.1.2
 
 
 class ARACrypt:
@@ -100,7 +100,7 @@ class ARACrypt:
 
         return ret
 
-    def transform_bytes(self, key: bytes, data: bytes) -> bytes:
+    def transform_bytes(self, key: bytes, data: bytes) -> bytearray:
         """Performs a transformation on a set of bytes, byte by byte. This works symmetrically as encryption/decryption.
 
         Args:

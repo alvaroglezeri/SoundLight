@@ -6,8 +6,7 @@ from typing import BinaryIO
 
 
 class KeyAnalysis():
-    """
-    WRITE
+    """Analyzes the key of the song, to provide context for other analysis phases. 
     """
 
     # Define the mapping of chroma features to keys
@@ -15,12 +14,11 @@ class KeyAnalysis():
                      'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
     @staticmethod
-    def getKey(file: BinaryIO) -> str:
+    def get_key(file: BinaryIO) -> str:
         """
-        WRITE
-        https://medium.com/@oluyaled/detecting-musical-key-from-audio-using-chroma-feature-in-python-72850c0ae4b1
+        Obtains the key of a songm by calculating the maximum chroma feature of the song.
         """
-        # DOCUMENT: It is necessary to load the audio file from the beginning: https://github.com/bastibe/python-soundfile/issues/333
+        # DOCUMENT: It is necessary to load the audio file from the beginning
 
         file.seek(0)
         y, sr = librosa.load(file)
