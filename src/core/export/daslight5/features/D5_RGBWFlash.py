@@ -1,33 +1,38 @@
+
+
 from typing import List
-from lxml.etree import _Element as XMLElement
 import uuid
-
 from core.export.daslight5.Daslight5Exporter import create_element
-from core.model.features import IFeature, IFeatureExporter, SimpleFlash
-from lib.helpers import get_rand_color
+from core.model.features import IFeature, IFeatureExporter, RGBWFlash
+from lxml.etree import _Element as XMLElement
+
+from lib.helpers import get_named_color
 
 
-class D5_SimpleFlash(IFeatureExporter):
+class D5_RGBWFlash(IFeatureExporter):
     """
-    Export generator for SimpleFlash.
+    Daslight 5 export generator for RGBWFlash.
     The data for the fixtures is obtained directly from hand-crafted scenes.
     """
 
     # Fixture DATA
     _DATA = {
-        'on': "eJxiYGT4z8DAwLiHARu0AWIGAAAAAP//",
-        'off': "eJxiYPz/n4GBgXEPAy7IAAAAAP//"
+        'red': "eJxiYGH4DwEMDAyMNgx7sECQKAMAAAD//w==",
+        'green': "eJxiYPn/n+E/CDAwMDDuYbBh2IMEbeAkAwAAAP//",
+        'blue': "eJxiYPkPBAwgzMDAuIdhD4MNwx44tIGTDAAAAAD//w==",
+        'white': "eJxiYPkPBgz/GRgYGPcwwKANGskAAAAA//8="
     }
 
     # Stores the SCENEUID for each scene
     _SCENES = {
-        'all': "",
-        'even': "",
-        'odd': ""
+        'red': "",
+        'green': "",
+        'blue': "",
+        'white': ""
     }
 
     def generate_scenes(self, feature: type[IFeature], data=None) -> List[XMLElement]:
-        """Generates the SCENE element for a SimpleFlash.
+        """Generates the SCENE elements for the RGBWFlash.
 
         Args:
             feature (IFeature): Feature type for which to generate the scene.
@@ -41,7 +46,7 @@ class D5_SimpleFlash(IFeatureExporter):
         """
         # if isinstance(feature, SimpleFlash) or ...
         scenes: List[XMLElement] = []
-        if feature is SimpleFlash:
+        if feature is RGBWFlash:
             if isinstance(data, XMLElement):
                 for mode in self._SCENES.keys():
                     scene: XMLElement = self._scenes(mode, feature, data)
@@ -55,16 +60,18 @@ class D5_SimpleFlash(IFeatureExporter):
 
     # -----------------------------------------------------------
 
-    def _scenes(self, mode: str, feature: type[SimpleFlash], data: XMLElement) -> XMLElement:
+    def _scenes(
+        self, mode: str, feature: type[RGBWFlash], data: XMLElement
+    ) -> XMLElement:
         """Generates the individual SCENE element for this feature.
         """
         scene: XMLElement = create_element("SCENE")
 
         # Scene UUID, needed for _fixtureDatas
-        self._SCENES[mode] = str(uuid.uuid4())  # Useful for later
+        self._SCENES[mode] = str(uuid.uuid4())
         scene.set("DASUID", self._SCENES[mode])
-        scene.set("NAME", f"{feature.get_feature_name()} - {mode} (scene)")
-        scene.set("COLOR", get_rand_color())
+        scene.set("NAME", f"{mode} (scene)")
+        scene.set("COLOR", get_named_color(mode))
         scene.set("ENABLE", "1")
         scene.set("VISIBLE", "1")
         scene.set("LOOP_MODE", "0")
@@ -97,60 +104,31 @@ class D5_SimpleFlash(IFeatureExporter):
 
         return scene
 
-    def _fixture_datas(self, mode: str, feature: type[SimpleFlash], data: XMLElement) -> XMLElement:
+    def _fixture_datas(
+        self, mode: str, feature: type[RGBWFlash], dlmFile: XMLElement
+    ) -> XMLElement:
         """Sets the fixtures' DATA attribute to the correct B64 string.
         """
         fixtureDatas: XMLElement = create_element("FIXTUREDATAS")
 
         # Getting all relevant fixtures in the patch
-        fixtures: list = data.xpath(
-            f'/DLMFILE/FIXTUREGROUPS/FIXTUREGROUP[@NAME="ParCan"]/FIXTURE/@DASUID'
+        fixtures: list = dlmFile.xpath(
+            f'/DLMFILE/FIXTUREGROUPS/FIXTUREGROUP[@NAME="RGBW"]/FIXTURE/@DASUID'
         )
 
         fixtureDatas.set("NB", str(len(fixtures)))
 
         # We select the values, depending on the mode
-        match mode:
-            case 'all':
-                for f in fixtures:
-                    attribs = {
-                        "FIXTURE": str(f),
-                        "DATA": self._DATA['on'],
-                    }
-                    fixtureDatas.append(create_element("FIXTUREDATA", attribs))
-            case 'even':
-                on = True
-                for f in fixtures:
-                    if on:
-                        attribs = {
-                            "FIXTURE": str(f),
-                            "DATA": self._DATA['on'],
-                        }
-                    else:
-                        attribs = {
-                            "FIXTURE": str(f),
-                            "DATA": self._DATA['off'],
-                        }
-                    fixtureDatas.append(
-                        create_element("FIXTUREDATA", attribs))
-                    on = not on
-
-            case 'odd':
-                on = False
-                for f in fixtures:
-                    if on:
-                        attribs = {
-                            "FIXTURE": str(f),
-                            "DATA": self._DATA['on'],
-                        }
-                    else:
-                        attribs = {
-                            "FIXTURE": str(f),
-                            "DATA": self._DATA['off'],
-                        }
-                    fixtureDatas.append(
-                        create_element("FIXTUREDATA", attribs))
-                    on = not on
+        if mode in ['red', 'green', 'blue', 'white']:
+            for f in fixtures:
+                data = {
+                    "FIXTURE": str(f),
+                    "DATA": self._DATA[mode],
+                }
+                fixtureDatas.append(create_element("FIXTUREDATA", data))
+        else:
+            # match mode...
+            pass
 
         return fixtureDatas
 
@@ -169,7 +147,7 @@ class D5_SimpleFlash(IFeatureExporter):
         Returns:
             XMLElement: BLOCK element for this feature instance.
         """
-        if isinstance(feature, SimpleFlash):
+        if isinstance(feature, RGBWFlash):
             block: XMLElement = create_element("BLOCK")
 
             block.set("TYPE", "1")
@@ -181,13 +159,13 @@ class D5_SimpleFlash(IFeatureExporter):
             block.set("POSITION", "0")
             block.set("FADEIN", "0")
             # TODO: BPM calculation?
-            block.set("FADEOUT", "600")
+            block.set("FADEOUT", "300")
             block.set("SPEED", "1")
             block.set("ALLOWLOOP", "1")
             block.set("CONFORM_TO_TEMPO", "1")
             block.set("SCENEUUID", self._SCENES[feature.mode()])
 
-            block.append(create_element('DASTLSUBLINES', {'DASTLNB': '0'}))
+            block.append(create_element("DASTLSUBLINES", {"DASTLNB": "0"}))
 
             return block
         else:
