@@ -3,7 +3,7 @@ from deprecated import deprecated
 
 class DuplicateElementException(Exception):
     """
-    WRITE
+    Raised when trying to add an element that is already registered.
     """
 
     def __init__(self, msg=f'This element is already registered.'):
@@ -12,8 +12,7 @@ class DuplicateElementException(Exception):
 
 class NotFoundException(Exception):
     """
-    WRITE
-    hola tomás
+    Raised when an element cannot be found.
     """
 
     def __init__(self, msg=f'This element cannot be found.'):
@@ -22,7 +21,7 @@ class NotFoundException(Exception):
 
 class InvalidFileException(Exception):
     """
-    WRITE
+    Raised when the format for a file is invalid.
     """
 
     def __init__(self, msg=f'This file is invalid.'):
@@ -32,20 +31,20 @@ class InvalidFileException(Exception):
 @deprecated
 class CodecConversionExeption(Exception):
     """
-    WRITE
+    DEPRECATED: Raised when a codec conversion must be performed. Contains the path where the new conversion must be done at.
     """
 
     def __init__(self, newPath: str, msg=f'A codec conversion must be performed.'):
         super().__init__(msg)
         self._newPath = newPath
 
-    def getNewPath(self) -> str:
+    def get_new_path(self) -> str:
         return self._newPath
 
 
 class NothingSelectedException(Exception):
     """
-    WRITE
+    Raised when asked for the selected element, but none is selected.
     """
 
     def __init__(self, msg=f'Nothing is selected.'):

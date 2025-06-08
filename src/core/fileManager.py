@@ -1,27 +1,26 @@
 from io import BufferedReader
+from typing import List
 from deprecated import deprecated
 from pathlib import Path
 
 from tinytag import tinytag, TinyTag, TinyTagException
-import allin1
 import ffmpeg
 
 from core.logger import Logger, LOG_CAT
 from core.exceptions import *
 from core.model.song import Song
-from core.model.features import IFeature
 
 
 class FileManager():
     """
-    Manages the files that the app has loaded
+    Manages the files that the program has loaded.
     """
-    _FORMAT: tuple[str, TinyTag] = ('wav', tinytag._Wave)
+    _FORMAT: tuple = ('wav', tinytag._Wave)
 
     # ----- CLASS METHODS -----
     def __new__(cls):
         """
-        Singleton implementation
+        Singleton implementation. The config is set on the first call.
         """
         if not hasattr(cls, 'instance'):
             cls.instance = object.__new__(cls)
@@ -29,21 +28,30 @@ class FileManager():
         return cls.instance
 
     def __setup__(self) -> None:
-        # WRITE
-        self._songs: list[Song] = list()
-        self._selected: Song = None
+        """Sets up the internal song list and selected song.
+        """
+        self._songs: List[Song] = list()
+        self._selected: Song | None = None
 
     def __init__(self) -> None:
+        """Provides an access to the current FileManager, regardless of context.
+        Implemented as a singleton. The first call must provide the _config_ param.
+
+        Args:
+            config (dict): Employed by the first call to configure the FileManager.
+        """
         # Empty __init__, so to not rebuild the singleton
         return
 
     def __del__(self) -> None:
+        """Automatically closes the loaded files.
+        """
         try:
-            file: Song
-            for file in self._songs:
+            song: Song
+            for song in self._songs:
                 try:
-                    Logger.log(LOG_CAT.INFO, f'Closing "{file.path}"...')
-                    file._file.close()
+                    Logger.log(LOG_CAT.INFO, f"Closing '{song['path']}'...")
+                    song['file'].close()
                 except:
                     pass
         except:
@@ -51,24 +59,39 @@ class FileManager():
 
     # ----- FILE MANAGING -----
 
-    def getSongs(self) -> list[Song]:
+    def get_songs(self) -> List[Song]:
+        """Returns all loaded songs.
+        """
         return self._songs
 
-    def closeSong(self, song: Song) -> None:
+    def close_song(self, song: Song) -> None:
+        """Removes a song from the loaded songs, closing its handle.
+
+        Args:
+            song (Song): Song to remove.
+
+        Raises:
+            NotFoundException: If the song is not found.
+        """
         if song not in self._songs:
             raise NotFoundException()
         else:
             try:
-                song.file.close()
+                song['file'].close()
                 self._songs.remove(song)
             except Exception as e:
                 Logger.log(LOG_CAT.ERROR, f'Error closing song: {e}')
+                pass
 
-    def loadSong(self, path: str) -> None:
-        """
-        WRITE
+    def load_song(self, path: str | Path) -> None:
+        """Loads a song into the file manager.
 
-        Loads the file
+        Args:
+            path (str | Path): Path to the song file.
+
+        Raises:
+            InvalidFileException: If the format provided is not supported.
+            DuplicateElementException: If the file is already opened.
         """
         Logger.log(LOG_CAT.INFO, f'Loading "{path}"...')
 
@@ -79,7 +102,7 @@ class FileManager():
                 validFormats: str = ' '.join(
                     [f for f in TinyTag.SUPPORTED_FILE_EXTENSIONS])
                 raise InvalidFileException(
-                    f'This file is not supported! Valid file formats are: {validFormats}')
+                    f'This file is not supported! Valid file formats are: \n\t{validFormats}')
 
             # Checks the codec of the file, and converts to .wav if needed
             file: BufferedReader = open(path, "rb")
@@ -88,20 +111,20 @@ class FileManager():
             tags: TinyTag = TinyTag.get(file_obj=file)
 
             # Checking file codec and performing conversion if needed
-            file, path = self._checkCodec(file)
+            file, path = self._check_codec(file)
 
             # Building Song object and adding tags
             song: Song = Song(file)
-            self._addTags(song, tags)
+            self._add_tags(song, tags)
 
             # Adding the file to the list
             song: Song
             if song not in self._songs:
                 self._songs.append(song)
-                Logger.log(LOG_CAT.SUCCESS, f'Loaded "{song.title}".')
+                Logger.log(LOG_CAT.SUCCESS, f"Loaded '{song['title']}'.")
             else:
                 Logger.log(LOG_CAT.ERROR,
-                           f'File "{song.title}" already exists.')
+                           f"File '{song['title']}' already exists.")
                 raise DuplicateElementException(
                     f'This file is already loaded.')
 
@@ -122,39 +145,43 @@ class FileManager():
             Logger.log(LOG_CAT.ERROR, e)
             raise e
 
-    def _addTags(self, song: Song, tags: TinyTag) -> None:
-        """Adds the tags gathered to the song
-        WRITE
-
-        Args:
-            song (Song): _description_
-            tags (TinyTag): _description_
+    def _add_tags(self, song: Song, tags: TinyTag) -> None:
+        """Adds the tags gathered from TinyTag into the song's internal structure.
         """
 
         tinytagData = tags.as_dict()
-        song.addMetadata(f'tinytag', tinytagData)
 
-    def _checkCodec(self, file: BufferedReader) -> tuple[BufferedReader, str]:
+        if 'title' in tinytagData.keys():
+            if type(tinytagData['title']) is list:
+                song['title'] = tinytagData['title'][0]
+            else:
+                song['title'] = tinytagData['title']
+        else:
+            # Default song name is the filename
+            song['title'] = str(Path(song['path']).name)
+
+        # Everything else is stored in its own key.
+        song['metadata']['tinytag'] = tinytagData
+
+    def _check_codec(self, file: BufferedReader) -> tuple[BufferedReader, str]:
         """Checks the codec of the file and performs a conversion if needed.
 
         Args:
-            file (BufferedReader): _description_
+            file (BufferedReader): file to check codec
 
         Returns:
             tuple[BufferedReader, str]: returns the final file and its path
         """
 
         # Obtaining file codec from the actual class parsed
-        codec: TinyTag = TinyTag.get(file_obj=file).__class__
-        Logger.log(
-            LOG_CAT.INFO, f'Detected codec: {codec.__qualname__}')
+        codec: type[TinyTag] = TinyTag.get(file_obj=file).__class__
+        Logger.log(LOG_CAT.INFO, f'Detected codec: {codec.__qualname__}')
 
         # If the codec is not .wav, we convert the file
         if codec != self._FORMAT[1]:
 
-            newPath = self._convertFile(file.name)
-            Logger.log(LOG_CAT.SUCCESS,
-                       f'Converted file to {self._FORMAT[0]}')
+            newPath = self._convert_file(file.name)
+            Logger.log(LOG_CAT.SUCCESS, f'Converted file to {self._FORMAT[0]}')
             Logger.log(LOG_CAT.INFO, f'New path: "{newPath}"')
             file.close()
             newFile: BufferedReader = open(newPath, "rb")
@@ -162,7 +189,7 @@ class FileManager():
         else:
             return file, file.name
 
-    def _convertFile(self, path: str) -> str:
+    def _convert_file(self, path: str) -> str:
         """Converts the file to .wav with ffmpeg
 
         Args:
@@ -171,8 +198,7 @@ class FileManager():
         Returns:
             str: path to the new file
         """
-        Logger.log(
-            LOG_CAT.WARN, f'Converting file to .{self._FORMAT[0]}...')
+        Logger.log(LOG_CAT.WARN, f'Converting file to .{self._FORMAT[0]}...')
 
         newPath = f'{Path(path).parents[0]}/{Path(path).stem}.{self._FORMAT[0]}'
         ffmpeg.input(path, v="quiet").output(newPath).overwrite_output().run()
@@ -185,19 +211,38 @@ class FileManager():
 
     # ----- SONG SELECTION -----
 
-    def hasSelectedFSong(self) -> bool:
+    def has_selected_song(self) -> bool:
+        """Returns ``True`` if the FileManager has a song selected, ``False`` otherwise.
+        """
         return self._selected is not None
 
-    def selectSong(self, n) -> None:
+    def select_song(self, n: int) -> None:
+        """Selects a song by index of the list of loaded songs.
+
+        Args:
+            n (int): Index of the song in the list.
+
+        Raises:
+            NotFoundException: If the song cannot be loaded.
+        """
         try:
             self._selected = self._songs[n]
-            Logger.log(LOG_CAT.SUCCESS, f'Selected "{self._selected.path}"')
+            if self._selected:
+                Logger.log(LOG_CAT.SUCCESS,
+                           f"Selected '{self._selected['path']}'")
+                pass
+            else:
+                raise NotFoundException()
         except Exception as e:
             Logger.log(LOG_CAT.ERROR, e)
             raise NotFoundException()
 
-    def getSelectedSong(self) -> Song:
-        # WRITE
+    def get_selected_song(self) -> Song:
+        """Returns the selected song.
+
+        Raises:
+            NothingSelectedException: If no song is selected.
+        """
         if self._selected is not None:
             return self._selected
         else:

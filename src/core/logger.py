@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from enum import Enum
 import inspect
+from typing import cast
+from types import FrameType
 
 enable: bool = True
 
@@ -23,62 +26,74 @@ class LOG_CAT(Enum):
     WARN = 'WARN'
     SUCCESS = 'SUCC'
     DEBUG = 'DEBG'
-# CATEGORY = Enum('Category', ['ERROR', 'INFO', 'WARN', 'SUCCESS', 'DEBUG'])
 
 
 class ILogger(ABC):
+    """All loggers for SoundLight should follow this interface.
+    """
     def __new__(cls):
         """
-        Singleton implementation
-        #WRITE
+        Singleton implementation for the logger.
         """
         if not hasattr(cls, 'instance'):
             cls.instance = super(ILogger, cls).__new__(cls)
         return cls.instance
 
+    @staticmethod
     @abstractmethod
-    def log(msg: any) -> None:
-        pass
-
-    @abstractmethod
-    def log(location: str, msg: any) -> None:
-        pass
-
-    @abstractmethod
-    def log(category: LOG_CAT, location: str, msg: any) -> None:
-        pass
+    def log(category: LOG_CAT, msg) -> None:
+        ...
 
     @staticmethod
-    def isEnabled() -> bool:
-        pass
+    def is_enabled() -> bool:
+        ...
 
 
 class Logger(ILogger):
     """
-    Debug Console Logger
-
-    WRITE
+    Default logger for the application.
     """
 
-    _outF: callable = print
+    _outF: Callable = print
 
     @classmethod
-    def setOutputFunction(cls, output: callable) -> None:
+    def set_output_function(cls, output: Callable) -> None:
+        """Sets the function to which the message strings will be passed.
+
+        Args:
+            output (Callable): Function receiving a string.
+        """
         cls._outF = output
 
     @staticmethod
-    def log(category: LOG_CAT, msg: any) -> None:
+    def log(category: LOG_CAT, msg) -> None:
+        """Logs a message. Also records the category of the message.
+
+        Args:
+            category (LOG_CAT): _description_
+            msg (_type_): _description_
+        """
         if enable:
             # Obtain caller function frame
-            frame = inspect.currentframe().f_back
-            class_name: str = None
+            c_frame = inspect.currentframe()
+            if c_frame != None:
+                frame = c_frame.f_back
+            else:
+                frame = None
+            class_name: str | None = None
 
-            if "self" in frame.f_locals:  # For instance methods
-                class_name: str = frame.f_locals["self"].__class__.__name__
+            if frame == None:
+                class_name = None
+            elif "self" in frame.f_locals:  # For instance methods
+                class_name = frame.f_locals["self"].__class__.__name__
             elif "cls" in frame.f_locals:  # For class methods
-                class_name: str = frame.f_locals["cls"].__name__
+                class_name = frame.f_locals["cls"].__name__
 
-            caller_name: str = frame.f_code.co_name
+            caller_name: str | None
+            if frame != None:
+                caller_name = frame.f_code.co_name
+            else:
+                caller_name = None
 
             # Select terminal color
             match category:
@@ -96,11 +111,15 @@ class Logger(ILogger):
                     label: str = f'[????]'
 
             # Construct final message
-            if class_name:
+            if class_name and caller_name:
                 Logger._outF(f'{label} at {class_name}.{caller_name}: {msg}')
-            else:
+            elif class_name:
+                Logger._outF(f'{label} at {class_name}: {msg}')
+            elif caller_name:
                 Logger._outF(f'{label} at {caller_name}: {msg}')
+            else:
+                Logger._outF(f'{label}: {msg}')
 
     @staticmethod
-    def isEnabled() -> bool:
+    def is_enabled() -> bool:
         return enable
