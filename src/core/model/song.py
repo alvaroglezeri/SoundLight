@@ -1,23 +1,30 @@
+from numpy import ndarray
 from io import BufferedReader
 from math import ceil
 import json
 
 # from core.model.features import IFeature
 from core.logger import Logger, LOG_CAT
+from core.model.features import IFeature
+# from core.model.helpers import song_repr_helper
 
 
 class Song():
-    # WRITE
+    """Song object that contains all info of the song under analysis:
+    - File metadata.
+    - Analysis results.
+    - Generated features.
+    """
 
     # ----- CLASS METHODS -----
     def __init__(self, file: BufferedReader) -> None:
         # Building internal structure of the song as a dict
         self._struct: dict = {
-            "song": {
-                "file": file,
-                "path": file.name,
-                "metadata": {}
-            },
+            "file": file,
+            "path": file.name,
+            # Other properties...
+
+            "metadata": {},
             "patch": {},
             "features": []
         }
@@ -29,10 +36,10 @@ class Song():
             return self.__hash__() == other.__hash__()
 
     def __hash__(self) -> int:
-        return hash(self['song']['path'])
+        return hash(self['path'])
 
     def __repr__(self) -> str:
-        return json.dumps(self._struct)
+        return json.dumps(self._struct, default=self.song_repr_helper)
 
     def __str__(self) -> str:
         def secToMin(seconds) -> str:
@@ -41,69 +48,29 @@ class Song():
             return f'{min}:{sec}'
 
         try:
-            title: str = self['song']['tinytag']['title']
-            author: str = self['song']['tinytag']['artist'] if self['song'][
+            title: str = self['tinytag']['title']
+            author: str = self['tinytag']['artist'] if self[
                 'tinytag']['artist'] != None else '(No author)'
-            length: str = secToMin(self['song']['tinytag.duration'])
+            length: str = secToMin(self['tinytag.duration'])
             return f'{title} - {author} ({length})'
         except Exception as e:
             Logger.log(LOG_CAT.ERROR, e)
-            return f"Error getting properties for {self['song']['path']}"
+            return f"Error getting properties for {self['path']}"
 
     def __getitem__(self, key: str):
         return self._struct[key]
 
-    """
-    # ----- COMMON PROPERTIES -----
+    def __setitem__(self, key, value) -> None:
+        self._struct[key] = value
 
-    @property
-    def title(self) -> str:
+    def song_repr_helper(self, object):
+        if isinstance(object, ndarray):
+            return list(object)
 
-        # Returns the title of the song.
+        if isinstance(object, BufferedReader):
+            return object.name
 
-        try:
-            return self['song']['tinytag']['title'][0] if self['song']['tinytag']['title'][0] != None else '(No title)'
-        except:
-            return '(No title)'
+        if isinstance(object, IFeature):
+            return object.serialize()
 
-    @property
-    def file(self) -> BufferedReader:
-
-        # Returns the file itself
-
-        Returns
-        -------
-        BufferedReader
-            object with the file loaded
-
-        return self['song']['file']
-
-    @property
-    def path(self) -> str:
-
-        # Returns the path to the file in the filesystem
-
-        return self['song']['path']
-
-  # ----- FILE METADATA -----
-
-    @property
-    def metadata(self) -> dict:
-        return self._metadata
-
-    def addMetadata(self, key: str, value) -> None:
-        self._metadata[key] = value
-    
-
-    # ----- GENERATED FEATURES -----
-    @property
-    def features(self) -> list[IFeature]:
-        return self._features
-
-    def addFeatures(self, features: IFeature | list[IFeature]) -> None:
-        if isinstance(features, IFeature):
-            self._features.append(features)
-        else:
-            for f in features:
-                self._features.append(f)
-    """
+        return str(object)
