@@ -15,3 +15,5 @@ wheel;
 typing;
 #
 lxml;
+#
+toml;
