@@ -1,0 +1,57 @@
+# Fixture configuration
+[fixtures]
+
+[fixtures.ParCan.ssl2]
+windows = 'V:\Programas\Daslight\ScanLibrary\_Generic\PAR 64.ssl2'
+linux = '/home/alvaro/Descargas/_Generic/PAR 64.ssl2'
+
+[fixtures.MovingHead.ssl2]
+windows = 'V:\Programas\Daslight\ScanLibrary\_Generic\MOVING HEAD.ssl2'
+linux = '/home/alvaro/Descargas/_Generic/MOVING HEAD.ssl2'
+
+[fixtures.RGBW.ssl2]
+windows = 'V:\Programas\Daslight\ScanLibrary\_Generic\RGBW.ssl2'
+linux = '/home/alvaro/Descargas/_Generic/RGBW.ssl2'
+
+[fixtures.Blinder.ssl2]
+windows = 'V:\Programas\Daslight\ScanLibrary\_Generic\PAR 36.ssl2'
+linux = '/home/alvaro/Descargas/_Generic/PAR 36.ssl2'
+
+[fixtures.LEDStrip.ssl2]
+windows = 'V:\Programas\Daslight\ScanLibrary\_Generic\Scanner.ssl2'
+linux = '/home/alvaro/Descargas/_Generic/Scanner.ssl2'
+
+# Analysis configuration
+[analysis.simpleAlgorithm]
+
+[analysis.simpleAlgorithm.aio]
+out_dir = './analyzed'
+visualize = false
+sonify = false
+include_activations = false
+include_embeddings = false
+demix_dir = './demix/htdemucs'
+overwrite = false
+multiprocess = true
+
+[analysis.simpleAlgorithm.bass]
+threshold_percentage = 0.025
+rms_params = { frame_length = 4096, hop_length = 1024 }
+display = false
+sonify = false
+save_dir = ''
+
+# Export configuration
+[export]
+
+[export.path]
+windows = '.\output'
+linux = './output'
+
+[export.daslight5]
+dlmfile = { 'TYPE' = 'Daslight', 'VERSION' = '5', 'DASBUILD' = '24.1016.154.85', 'VERSIONFILE' = '2' }
+configuration = {'VIEWZOOM' = '1', 'VIEWPOSX' = '200', 'VIEWPOSY' = '100', 'TOUCH_ZOOMS' = '1'}
+
+[export.daslight5.key]
+windows = 'C:\Users\Álvaro\Desktop\TFG\export\daslight5\key'
+linux = 'src/core/export/daslight5/key'
