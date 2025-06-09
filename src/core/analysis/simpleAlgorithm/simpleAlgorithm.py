@@ -27,7 +27,7 @@ class SimpleAlgorithm(IAnalysisAlgorithm):
     def get_keystring(self) -> str:
         return 'simpleAlgorithm'
 
-    # ---------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def _key_analysis(self) -> None:
         """Analyzes the key of the song.
@@ -37,7 +37,7 @@ class SimpleAlgorithm(IAnalysisAlgorithm):
         Logger.log(LOG_CAT.INFO, f'Found key: {key}')
         self._song['metadata']['key'] = key
 
-    # ---------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def _beats_deeprhythm(self) -> None:
         """Analyzes the beat of the song with Deeprhythm.
@@ -53,7 +53,7 @@ class SimpleAlgorithm(IAnalysisAlgorithm):
         self._song['metadata']['deeprythm']['confidence'] = confidence
         self._song['metadata']['deeprythm']['beats'] = beats
 
-    # ---------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def _sections_aio(self) -> None:
         """Analyzes the sections of the song with AllIn1
@@ -84,7 +84,7 @@ class SimpleAlgorithm(IAnalysisAlgorithm):
         if 'path' in self._song['metadata']['aio']:
             del self._song['metadata']['aio']['path']
 
-    # ---------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def _bass_analysis(self) -> None:
         """Analyzes the bass stem to detect peaks.

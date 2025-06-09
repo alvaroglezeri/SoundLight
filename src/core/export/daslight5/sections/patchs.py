@@ -79,7 +79,7 @@ class Patchs(Section):
         return Conf()['fixtures'][fixtureType]['ssl2'][self._platform]
         # return paths[fixtureType]
 
-    # -------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def write(self, song: Song) -> XMLElement:
         """Crafts the XMLElement PATCHS, for the .dvc file.
@@ -103,7 +103,7 @@ class Patchs(Section):
 
         return create_element('PATCHS', attribs)
 
-    # -------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def _patch_data(self, data: dict) -> XMLElement:
         patch: XMLElement = create_element('PATCH')
@@ -117,7 +117,7 @@ class Patchs(Section):
 
         return patch
 
-    # -------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def _fixtures(self, fixtureType: dict) -> XMLElement:
         sectionFixtures: XMLElement = create_element('FIXTURES')
@@ -133,7 +133,7 @@ class Patchs(Section):
 
         return sectionFixtures
 
-    # -------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def _ssl_library(self, fixtureType: dict) -> XMLElement:
         """SSLIBRARY section. Contains the description of each fixture type. Mostly taken from the SSL2 files.
@@ -169,7 +169,7 @@ class Patchs(Section):
 
         return sectionSslLibrary
 
-    # -------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def _fixture(self, sectionSslLibrary: XMLElement, fixtureType: dict, fixtureName: str) -> XMLElement:
         """FIXTURE section. Describes name, address, coords and size for each fixture, as well as its DASUID.

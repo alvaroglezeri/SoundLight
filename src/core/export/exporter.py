@@ -115,4 +115,4 @@ class Exporter():
             Logger.log(LOG_CAT.ERROR, 'An error ocurred during export:')
             raise e
 
-    # --------------------
+    # --------------------------------------------------------------------------

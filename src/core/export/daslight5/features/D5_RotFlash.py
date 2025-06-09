@@ -59,7 +59,7 @@ class D5_RotFlash(IFeatureExporter):
         else:
             raise ValueError(f"Invalid feature type: {feature}")
 
-    # -----------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def _scenes(
         self, mode: str, feature: type[RotFlash], data: XMLElement
@@ -180,7 +180,7 @@ class D5_RotFlash(IFeatureExporter):
 
         return fixtureDatas
 
-    # ------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def generate_instance(self, feature: IFeature, data=None) -> XMLElement:
         """Creates a timeline BLOCK element representing the instance

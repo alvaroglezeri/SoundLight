@@ -36,7 +36,7 @@ class SimpleGenerator(IGenerationAlgorithm):
 
         return ret
 
-    # -----------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def _generate_transition_flashes(self) -> List[IFeature]:
         """Generates flashes at the transition points of the song.

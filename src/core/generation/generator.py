@@ -23,7 +23,7 @@ class IGenerationAlgorithm(ABC):
         """
         pass
 
-# -----------------------------------------------------
+# --------------------------------------------------------------------------
 
 
 class Generator():
@@ -34,12 +34,12 @@ class Generator():
     def __init__(self) -> None:
         """Constructs the generator object.
         """
-        self._algorithm = None
+        self._generationAlgorithm = None
 
     def set_algorithm(self, algorithm: IGenerationAlgorithm) -> None:
         """Sets the generation algorithm.
         """
-        self._algorithm = algorithm
+        self._generationAlgorithm = algorithm
 
     def set_patch(self, patch: dict) -> None:
         """Sets the patch to generate for.
@@ -52,14 +52,14 @@ class Generator():
         Args:
             song (Song): Song object for which to generate the features.
         """
-        assert self._algorithm, "No algorithm set!"
+        assert self._generationAlgorithm, "No algorithm set!"
         assert self._patch, "No patch loaded!"
 
         Logger.log(LOG_CAT.INFO, f'Starting feature generation...')
 
         song['patch'] = self._patch
-        self._algorithm.load_metadata(song['metadata'])
+        self._generationAlgorithm.load_metadata(song['metadata'])
 
-        song['features'] = self._algorithm.generate()
+        song['features'] = self._generationAlgorithm.generate()
         # for feature in self._algorithm.generate():
         #    song['features'].append(feature)

@@ -36,7 +36,7 @@ class SSL2Parser():
             # Parsing bytearray as XML
             self.xml: XMLElement = etree.fromstring(bytes(decrypted), None)
 
-    # ---------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def parse(self, x_path: str) -> str:
         """Parses an XPath expression, and returns the result as a string. If the result is a list, returns the first entry.
@@ -63,7 +63,7 @@ class SSL2Parser():
             ret = ret[0]
         return str(ret)
 
-    # ---------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def get(self, x_path: str) -> XMLElement | List[XMLElement]:
         """Parses an XPath expression, and returns the result as an XMLElement.

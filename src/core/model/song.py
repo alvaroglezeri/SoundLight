@@ -14,7 +14,9 @@ class Song():
     - Generated features.
     """
 
-    # ----- CLASS METHODS -----
+    # --------------------------------------------------------------------------
+    # CLASS METHODS
+    # -------------------------------------------------------------------------------
     def __init__(self, file: BufferedReader) -> None:
         # Building internal structure of the song as a dict
         self._struct: dict = {

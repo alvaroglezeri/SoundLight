@@ -30,7 +30,7 @@ def create_element(name: str, attributes: dict | None = None) -> XMLElement:
         print(f'Error creating element "{name}": {e}')
         return NewElement(name, attrib=None, nsmap=None)
 
-# --------------------------------------------------
+# --------------------------------------------------------------------------
 
 
 class Section(ABC):
@@ -57,7 +57,7 @@ class Section(ABC):
         """
         ...
 
-# --------------------------------------------------
+# --------------------------------------------------------------------------
 
 
 class Daslight5Exporter(IExportAlgorithm):
@@ -92,7 +92,7 @@ class Daslight5Exporter(IExportAlgorithm):
         else:
             raise ValueError('Export not finished!')
 
-    # ----------------------------------------
+    # --------------------------------------------------------------------------
 
     def export(self, song: Song) -> None:
         """Runs the export process for this song. Feature generation must be complete, otherwise no features will be generated.

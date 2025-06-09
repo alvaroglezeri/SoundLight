@@ -170,7 +170,7 @@ class SimpleFlash(IFeature):
     def serialize(self) -> dict:
         return {'type': 'SimpleFlash', 'timestamp': self._timestamp, 'duration': self._duration, 'mode': self._mode}
 
-# --------------------------------------------------------------
+# --------------------------------------------------------------------------
 
 
 class RGBWFlash(IFeature):
@@ -219,7 +219,7 @@ class RGBWFlash(IFeature):
     def serialize(self) -> dict:
         return {'type': 'RGBWFlash', 'timestamp': self._timestamp, 'duration': self._duration, 'mode': self._mode}
 
-# --------------------------------------------------------------
+# --------------------------------------------------------------------------
 
 
 class RotFlash(IFeature):

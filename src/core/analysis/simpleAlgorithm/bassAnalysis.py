@@ -37,7 +37,7 @@ class BassAnalysis():
         self._SAVE_DIR = Conf()[
             'analysis']['simpleAlgorithm']['bass']['save_dir']
 
-    # ----------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def analyze(self) -> array:
         """Analyzes the bass stem of the song, to get its volume peaks.
@@ -77,7 +77,7 @@ class BassAnalysis():
 
         return peaks
 
-    # ----------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def _load_song_data(self) -> None:
         """Translates the song data into a custom data structure, to simplify processing.
@@ -114,7 +114,7 @@ class BassAnalysis():
         # TODO: This could be coded cleaner with the zip() method
         return Common.split(rms_data, phrase_indexes)  # type: ignore
 
-    # ----------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def _analyze_phrase(self, phrases, phrases_i, all_peaks_i, all_filters, filter_mode, p_i) -> None:
         """Analyzes each phrase, to give context to the analysis and allow finer threshold adjustments.
@@ -180,7 +180,7 @@ class BassAnalysis():
         all_peaks_i.append(p_peak_i)
         all_filters.append(filter_d.copy())
 
-    # ----------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     @deprecated
     def _analyze_beat(self, beat: array, i_beat: array) -> array:

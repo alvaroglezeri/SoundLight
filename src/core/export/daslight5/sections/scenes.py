@@ -20,7 +20,7 @@ class Scenes(Section):
         self._featureCreator = D5FeatureCreator(self.dlmFile)
         self._featureSerializer = FeatureSerializer
 
-    # -----------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def write(self, song: Song) -> XMLElement:
         """Crafts the XMLElement SCENES, for the .dvc file.
@@ -51,7 +51,7 @@ class Scenes(Section):
 
         return ret
 
-    # -----------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def _feature_type_bank(self, feature_class: IFeature) -> XMLElement:
         """BANK element for this feature class, can create more than one scene.
@@ -75,12 +75,12 @@ class Scenes(Section):
 
         return bank
 
-    # -----------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def _feature_type_scene(self, feature_class: IFeature) -> List[XMLElement]:
         return self._featureCreator.create_scenes_for(feature_class)
 
-    # -----------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def _superscene_bank(self) -> XMLElement:
         """The superscene holds the timeline of features, arranged at the correct time.
@@ -100,7 +100,7 @@ class Scenes(Section):
 
         return superscene
 
-    # -----------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def _superscene_scene(self) -> XMLElement:
         """SCENE element and its attributes. COuld be loaded from the configuration, but default values work fine.
@@ -141,7 +141,7 @@ class Scenes(Section):
 
         return scene
 
-    # -----------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def _superscene_rack(self) -> XMLElement:
         """Inside the scene, the rack contains the timelines.
@@ -168,7 +168,7 @@ class Scenes(Section):
         racks.append(rack)
         return racks
 
-    # -----------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def _track_timeline(self) -> XMLElement:
         """Creates the track that contains the song file. Nothing else is stored here.
@@ -210,7 +210,7 @@ class Scenes(Section):
         timeline.append(blocks)
         return timeline
 
-    # -----------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def _feature_timelines(self) -> List[XMLElement]:
         """Timelines for the features, one timeline for each feature type.
@@ -242,7 +242,7 @@ class Scenes(Section):
             timelines.append(timeline)
         return timelines
 
-    # -----------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def _feature_timeline_block(self, feature: IFeature) -> XMLElement:
         """Creates the block on the timeline for this fixture.
