@@ -49,3 +49,19 @@ class NothingSelectedException(Exception):
 
     def __init__(self, msg=f'Nothing is selected.'):
         super().__init__(msg)
+
+
+class ArgumentException(Exception):
+    """Raised when checking function arguments.
+    """
+
+    def __init__(self, msg=f'The argument provided is invalid!'):
+        super().__init__(msg)
+
+
+class InvalidStateException(Exception):
+    """Raised when checking the state of objects before or after operations.
+    """
+
+    def __init__(self, msg=f'Object is in an invalid state!'):
+        super().__init__(msg)
