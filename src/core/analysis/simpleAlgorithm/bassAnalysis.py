@@ -5,9 +5,9 @@ import numpy as np
 from numpy import ndarray as array
 
 
-from core.analysis.simpleAlgorithm.common import Common
-from core.conf import Conf
-from core.model.song import Song
+from ...analysis.simpleAlgorithm.common import Common
+from ...conf import Conf
+from ...model.song import Song
 
 
 class BassAnalysis():

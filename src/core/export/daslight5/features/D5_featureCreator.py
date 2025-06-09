@@ -1,10 +1,10 @@
 from typing import List, cast
 from lxml.etree import _Element as XMLElement
 
-from core.export.daslight5.features.D5_RotFlash import D5_RotFlash
-from core.export.daslight5.features.D5_RGBWFlash import D5_RGBWFlash
-from core.export.daslight5.features.D5_simpleFlash import D5_SimpleFlash
-from core.model.features import IFeature, IFeatureExporter, RGBWFlash, RotFlash, SimpleFlash
+from ....export.daslight5.features.D5_RotFlash import D5_RotFlash
+from ....export.daslight5.features.D5_RGBWFlash import D5_RGBWFlash
+from ....export.daslight5.features.D5_simpleFlash import D5_SimpleFlash
+from ....model.features import IFeature, IFeatureExporter, RGBWFlash, RotFlash, SimpleFlash
 
 
 class D5FeatureCreator:

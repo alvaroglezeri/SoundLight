@@ -4,8 +4,8 @@ from allin1.typings import AnalysisResult
 from typing import cast
 from pathlib import Path
 
-from core.conf import Conf
-from core.logger import LOG_CAT, Logger
+from ...conf import Conf
+from ...logger import LOG_CAT, Logger
 
 
 class PhraseAnalysis():
@@ -32,19 +32,19 @@ class PhraseAnalysis():
                 "Couldn't find [analysis.simpleAlgorithm.aio] in the configuration file")
 
         paths = filepath
-        out_dir = options['out_dir'] if options['out_dir'] else '/output'
-        visualize = options['visualize'] if options['visualize'] else False
-        sonify = options['sonify'] if options['sonify'] else False
+        out_dir = options['out_dir'] if 'out_dir' in options else None
+        visualize = options['visualize'] if 'visualize' in options else False
+        sonify = options['sonify'] if 'sonify' in options else False
         # model: autoselect
         # device: autoselect
-        include_activations = options['include_activations'] if options['include_activations'] else False
-        include_embeddings = options['include_embeddings'] if options['include_embeddings'] else False
-        demix_dir = options['demix_dir'] if options['demix_dir'] else '/demix'
+        include_activations = options['include_activations'] if 'include_activations' in options else False
+        include_embeddings = options['include_embeddings'] if 'include_embeddings' in options else False
+        demix_dir = options['demix_dir'] if 'demix_dir' in options else '/demix'
         # spec_dir: disabled
-        # This must always be true, to keep the demixed audio for furter analysis
+        # keep_byproducts must always be true, to keep the demixed audio for furter analysis
         keep_byproducts = True
-        overwrite = options['overwrite'] if options['overwrite'] else False
-        multiprocess = options['multiprocess'] if options['multiprocess'] else True
+        overwrite = options['overwrite'] if 'overwrite' in options else False
+        multiprocess = options['multiprocess'] if 'multiprocess' in options else True
 
         result = analyze(
             paths=paths,

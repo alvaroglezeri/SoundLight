@@ -1,12 +1,10 @@
 from abc import ABC, abstractmethod
-import builtins
-import io
 from io import BytesIO
 from pathlib import Path
-import typing
 from typing import List
-from core.model.song import Song
-from core.logger import Logger, LOG_CAT
+
+from ..model.song import Song
+from ..logger import Logger, LOG_CAT
 
 
 class IExportAlgorithm(ABC):

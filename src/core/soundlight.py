@@ -2,14 +2,14 @@ from pathlib import Path
 import json
 from typing import List
 
-from core.conf import Conf
-from core.exceptions import NothingSelectedException
-from core.fileManager import FileManager
-from core.analysis.analyzer import Analyzer, IAnalysisAlgorithm
-from core.generation.generator import Generator, IGenerationAlgorithm
-from core.export.exporter import Exporter, IExportAlgorithm
-from core.model.song import Song
-from lib.helpers import get_OS
+from .conf import Conf
+from .exceptions import NothingSelectedException
+from .fileManager import FileManager
+from .analysis.analyzer import Analyzer, IAnalysisAlgorithm
+from .generation.generator import Generator, IGenerationAlgorithm
+from .export.exporter import Exporter, IExportAlgorithm
+from .model.song import Song
+from ..lib.helpers import get_OS
 
 
 class SoundLight():
@@ -201,7 +201,7 @@ class SoundLight():
 
         path = None
         try:
-            folder_name = Conf()['path'][get_OS()]
+            folder_name = Conf()['export']['path'][get_OS()]
             file_name = Path(self._fm.get_selected_song()['path']).stem
             path = Path(f"{folder_name}/{file_name}.json")
 

@@ -1,14 +1,14 @@
 from pathlib import Path
 from allin1.typings import AnalysisResult
 
-from core.analysis.analyzer import IAnalysisAlgorithm
-from core.analysis.simpleAlgorithm.beatAnalysis import BeatAnalysis
-from core.analysis.simpleAlgorithm.keyAnalysis import KeyAnalysis
-from core.analysis.simpleAlgorithm.phraseAnalysis import PhraseAnalysis
-from core.analysis.simpleAlgorithm.bassAnalysis import BassAnalysis
-from core.conf import Conf
-from core.logger import LOG_CAT, Logger
-from core.model.song import Song
+from ..analyzer import IAnalysisAlgorithm
+from ..simpleAlgorithm.beatAnalysis import BeatAnalysis
+from ..simpleAlgorithm.keyAnalysis import KeyAnalysis
+from ..simpleAlgorithm.phraseAnalysis import PhraseAnalysis
+from ..simpleAlgorithm.bassAnalysis import BassAnalysis
+from ...conf import Conf
+from ...logger import LOG_CAT, Logger
+from ...model.song import Song
 
 
 class SimpleAlgorithm(IAnalysisAlgorithm):

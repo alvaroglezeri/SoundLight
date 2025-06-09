@@ -3,10 +3,8 @@ from io import BufferedReader
 from math import ceil
 import json
 
-# from core.model.features import IFeature
-from core.logger import Logger, LOG_CAT
-from core.model.features import IFeature
-# from core.model.helpers import song_repr_helper
+from ..logger import Logger, LOG_CAT
+from ..model.features import IFeature
 
 
 class Song():
@@ -56,6 +54,10 @@ class Song():
         except Exception as e:
             Logger.log(LOG_CAT.ERROR, e)
             return f"Error getting properties for {self['path']}"
+
+    # TODO: Replace calls to __getitem__ (song['key']) with this method, as it provides a default
+    def get(self, key: str):
+        return self._struct.get(key)
 
     def __getitem__(self, key: str):
         return self._struct[key]

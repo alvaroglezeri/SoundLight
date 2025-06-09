@@ -1,8 +1,8 @@
 from lxml.etree import _Element as XMLElement
 import uuid
 
-from core.model.song import Song
-from core.export.daslight5.Daslight5Exporter import create_element, Section
+from ....model.song import Song
+from ....export.daslight5.Daslight5Exporter import create_element, Section
 
 
 class FixtureGroups(Section):

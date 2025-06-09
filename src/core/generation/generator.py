@@ -1,13 +1,8 @@
-from pathlib import Path
-from deprecated import deprecated
-from allin1.typings import Segment
 from allin1.config import HARMONIX_LABELS
-import json
 
-from core.model.song import Song
-from core.logger import Logger, LOG_CAT
-from core.model.features import *
-from core.fileManager import FileManager
+from ..model.song import Song
+from ..logger import Logger, LOG_CAT
+from ..model.features import *
 
 
 class IGenerationAlgorithm(ABC):

@@ -3,11 +3,10 @@ from typing import List
 import lxml.etree as etree
 from lxml.etree import Element as NewElement
 from lxml.etree import _Element as XMLElement
-import json
 
-from core.conf import Conf
-from core.export.exporter import IExportAlgorithm
-from core.model.song import Song
+from ...conf import Conf
+from ...export.exporter import IExportAlgorithm
+from ...model.song import Song
 
 
 def create_element(name: str, attributes: dict | None = None) -> XMLElement:

@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
 
-from core.conf import Conf
-from core.model.song import Song
-from core.logger import Logger, LOG_CAT
+from ..conf import Conf
+from ..model.song import Song
+from ..logger import Logger, LOG_CAT
 
 
 class IAnalysisAlgorithm(ABC):

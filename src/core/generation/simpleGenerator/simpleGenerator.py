@@ -2,8 +2,8 @@ from ast import If
 import random
 from allin1.typings import Segment
 
-from core.logger import Logger, LOG_CAT
-from core.model.features import IFeature
+from ...logger import Logger, LOG_CAT
+from ...model.features import IFeature
 
 from ..generator import IGenerationAlgorithm
 from ...model.features import *

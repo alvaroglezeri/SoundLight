@@ -2,9 +2,9 @@ from typing import List
 from lxml.etree import _Element as XMLElement
 import uuid
 
-from core.export.daslight5.Daslight5Exporter import create_element
-from core.model.features import IFeature, IFeatureExporter, SimpleFlash
-from lib.helpers import get_rand_color
+from ....export.daslight5.Daslight5Exporter import create_element
+from ....model.features import IFeature, IFeatureExporter, SimpleFlash
+from .....lib.helpers import get_rand_color
 
 
 class D5_SimpleFlash(IFeatureExporter):

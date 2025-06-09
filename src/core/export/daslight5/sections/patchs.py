@@ -5,11 +5,11 @@ from lxml.etree import _Element as XMLElement
 from pathlib import Path
 import uuid
 
-from core.conf import Conf
-from core.model.song import Song
-from core.export.daslight5.Daslight5Exporter import create_element, Section
-from core.export.daslight5.SSL2Parser import SSL2Parser
-from lib.helpers import get_OS
+from ....conf import Conf
+from ....model.song import Song
+from ....export.daslight5.Daslight5Exporter import create_element, Section
+from ....export.daslight5.SSL2Parser import SSL2Parser
+from .....lib.helpers import get_OS
 
 
 class Patchs(Section):

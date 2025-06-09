@@ -3,7 +3,8 @@ from typing import List
 import lxml.etree as etree
 from lxml.etree import _Element as XMLElement
 from lxml.etree import XPathEvalError
-from lib.ARACrypt import ARACrypt as Crypt
+
+from ....lib.ARACrypt import ARACrypt as Crypt
 
 
 class SSL2Parser():

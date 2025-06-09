@@ -4,11 +4,11 @@ from typing import List
 import uuid
 from lxml.etree import _Element as XMLElement
 
-from core.export.daslight5.Daslight5Exporter import create_element, Section
-from core.export.daslight5.features.D5_featureCreator import D5FeatureCreator
-from core.model.features import FeatureSerializer, IFeature
-from core.model.song import Song
-from lib.helpers import get_rand_color
+from ....export.daslight5.Daslight5Exporter import create_element, Section
+from ....export.daslight5.features.D5_featureCreator import D5FeatureCreator
+from ....model.features import FeatureSerializer, IFeature
+from ....model.song import Song
+from .....lib.helpers import get_rand_color
 
 
 class Scenes(Section):

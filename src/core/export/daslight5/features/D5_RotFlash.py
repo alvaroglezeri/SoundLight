@@ -6,7 +6,7 @@ from core.export.daslight5.Daslight5Exporter import create_element
 from core.model.features import IFeature, IFeatureExporter, RGBWFlash, RotFlash
 from lxml.etree import _Element as XMLElement
 
-from lib.helpers import get_named_color, get_rand_color
+from .....lib.helpers import get_named_color, get_rand_color
 
 
 class D5_RotFlash(IFeatureExporter):

@@ -12,9 +12,9 @@ from scipy.signal import argrelextrema, find_peaks_cwt, find_peaks
 import soundfile as sf
 from IPython.display import Audio
 
-from core.conf import Conf
-from core.model.song import Song
-from core.logger import Logger, LOG_CAT
+from ...conf import Conf
+from ...model.song import Song
+from ...logger import Logger, LOG_CAT
 
 
 class Common():

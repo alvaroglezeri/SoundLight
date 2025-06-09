@@ -43,12 +43,12 @@ class Conf():
         """Obtains an entry from the configuration file.
 
         Raises:
-            ValueError: When the specified key does not exist.
+            ValueError: When the key is not present.
         """
         try:
             return self._config[key]
-        except Exception as e:
-            raise ValueError(f'Key not found: {e}')
+        except:
+            raise ValueError('Key not found!')
 
     def __setitem__(self, key, value) -> None:
         """Setting data in the config file is not supported!

@@ -2,8 +2,6 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from enum import Enum
 import inspect
-from typing import cast
-from types import FrameType
 
 enable: bool = True
 

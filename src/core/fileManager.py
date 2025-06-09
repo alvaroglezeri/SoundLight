@@ -6,9 +6,9 @@ from pathlib import Path
 from tinytag import tinytag, TinyTag, TinyTagException
 import ffmpeg
 
-from core.logger import Logger, LOG_CAT
-from core.exceptions import *
-from core.model.song import Song
+from .logger import Logger, LOG_CAT
+from .exceptions import *
+from .model.song import Song
 
 
 class FileManager():
