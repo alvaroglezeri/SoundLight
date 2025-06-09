@@ -1,14 +1,14 @@
 import dependencies
 import os
 
-from core.soundlight import SoundLight
+from src.core.soundlight import SoundLight
 
 # TODO: Refactor code to use the built-in logger
-from core.logger import Logger
+from src.core.logger import Logger
 
-from core.analysis.simpleAlgorithm.simpleAlgorithm import SimpleAlgorithm as SimpleAnalysisAlgorithm
-from core.generation.simpleGenerator.simpleGenerator import SimpleGenerator as SimpleGenerationAlgorithm
-from core.export.daslight5.Daslight5Exporter import Daslight5Exporter
+from src.core.analysis.simpleAlgorithm.simpleAlgorithm import SimpleAlgorithm as SimpleAnalysisAlgorithm
+from src.core.generation.simpleGenerator.simpleGenerator import SimpleGenerator as SimpleGenerationAlgorithm
+from src.core.export.daslight5.Daslight5Exporter import Daslight5Exporter
 
 if __name__ == "__main__":
     os.system('cls' if os.name == 'nt' else 'clear')
