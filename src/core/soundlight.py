@@ -3,7 +3,7 @@ import json
 from typing import List
 
 from .conf import Conf
-from .exceptions import NothingSelectedException
+from .exceptions import ArgumentException, NothingSelectedException
 from .fileManager import FileManager
 from .analysis.analyzer import Analyzer, IAnalysisAlgorithm
 from .generation.generator import Generator, IGenerationAlgorithm
@@ -16,40 +16,53 @@ class SoundLight():
     """Soundlight interface. Provides an abstraction layer for the whole framework. Configures the options for the algorithms used.
     """
 
-    def __init__(self, configFile_path: Path | str) -> None:
-        """Creates a new instance of the SoundLight interface. 
+    def __init__(self, config_file_path: Path | str) -> None:
+        """Creates a new instance of the SoundLight interface.
 
         Args:
             configFile_path (Path | str): Path to the TOML file containing the configuration options for the execution.
         """
-        self._load_config(configFile_path)
-        self._fm = FileManager()
+        if not isinstance(config_file_path, (Path, str)):
+            raise ArgumentException('Configuration file path not provided!')
+
+        self._load_config(config_file_path)
+        # Start FileManager
+        FileManager()
         self._an = Analyzer()
         self._gen = Generator()
         self._ex = Exporter()
 
         self._patchLoaded = False
+        self._analysisAlgorithmSet = False
         self._generationAlgorithmSet = False
         self._exportAlgorithmSet = False
+        self._exportPathSet = False
+        self._exportPath = None
 
         self._analysisComplete = False
         self._generationComplete = False
         self._exportComplete = False
 
+    def __del__(self) -> None:
+        # Resets the configuration loader
+        Conf.reset()
+        # Close FileManager
+        FileManager.reset()
+
     def _load_config(self, configFile_path: Path | str) -> None:
         # First call to Conf, to se the export path
-        Conf(configFile_path)
+        Conf(Path(configFile_path))
 
-    # ---------------------------------------------------------
+    # --------------------------------------------------------------------------
     #                   File Managing
-    # ---------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def close_selected_song(self) -> None:
         """Closes the file for the selected song.
         If no song is selected, nothing happens.
         """
-        if self._fm.has_selected_song():
-            self._fm.close_song(self._fm.get_selected_song())
+        if FileManager().has_selected_song():
+            FileManager().close_song(FileManager().get_selected_song())
 
     def add_song_from_path(self, path: str | Path) -> None:
         """Adds a song into the song list from a file.
@@ -57,7 +70,7 @@ class SoundLight():
         Args:
             path (str | Path): Path to the song file
         """
-        self._fm.load_song(path)
+        FileManager().load_song(path)
 
     def select_song(self, i: int) -> None:
         """Selects a song from all songs loaded. If the argument is not valid, raises NotFoundException.
@@ -65,18 +78,19 @@ class SoundLight():
         Args:
             i (int): Index of the song in the list.
         """
-        self._fm.select_song(i)
+        FileManager().select_song(i)
 
-    def get_selected_song(self) -> Song | None:
-        """Returns the currently selected song. 
+    def get_selected_song(self) -> Song:
+        """Returns the currently selected song.
+
+        Raises:
+            NothingSelectedException: If no element is selected.
 
         Returns:
-            Song | None: The currently selected song. If no song is selected, returns None.
+            Song: The currently selected song.
         """
-        if self._fm.has_selected_song():
-            return self._fm.get_selected_song()
-        else:
-            return None
+
+        return FileManager().get_selected_song()
 
     def get_loaded_songs(self) -> List[Song]:
         """Gets the list of the currently loaded songs.
@@ -84,11 +98,11 @@ class SoundLight():
         Returns:
             List[Song]: List of loaded songs.
         """
-        return self._fm.get_songs()
+        return FileManager().get_songs()
 
-    # ---------------------------------------------------------
+    # --------------------------------------------------------------------------
     #                     Configuration
-    # ---------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def set_patch(self, path: str | Path) -> None:
         """Loads a .json file containing the patch description, and configures the algorithms with it.
@@ -97,6 +111,7 @@ class SoundLight():
         Args:
             path (str | Path): Path to the .json file containing the patch.
         """
+        path = Path(path)
         try:
             with open(path, "r") as file:
                 patch: dict = json.load(file)
@@ -115,6 +130,9 @@ class SoundLight():
         if algorithm is not None and isinstance(algorithm, IAnalysisAlgorithm):
             self._an.set_algorithm(algorithm)
             self._analysisAlgorithmSet = True
+        else:
+            raise ArgumentException(
+                'The algorithm supplied does not implement the IAnalysisAlgorithm interface!')
 
     def set_generation_algorithm(self, algorithm: IGenerationAlgorithm) -> None:
         """Configures the feature generation algorithm for the program.
@@ -125,16 +143,22 @@ class SoundLight():
         if algorithm is not None and isinstance(algorithm, IGenerationAlgorithm):
             self._gen.set_algorithm(algorithm)
             self._generationAlgorithmSet = True
+        else:
+            raise ArgumentException(
+                'The algorithm supplied does not implement the IGenerationAlgorithm interface!')
 
-    def set_export_algorithm(self, exporter: IExportAlgorithm) -> None:
+    def set_export_algorithm(self, algorithm: IExportAlgorithm) -> None:
         """Configures the export algorithm for the program.
 
         Args:
             exporter (IExportAlgorithm): Export algorithm. Must implement the IExportAlgorithm interface.
         """
-        if exporter is not None and isinstance(exporter, IExportAlgorithm):
-            self._ex.set_algorithm(exporter)
+        if algorithm is not None and isinstance(algorithm, IExportAlgorithm):
+            self._ex.set_algorithm(algorithm)
             self._exportAlgorithmSet = True
+        else:
+            raise ArgumentException(
+                'The algorithm supplied does not implement the IExportAlgorithm interface!')
 
     def set_export_path(self, path: str | Path) -> None:
         """Configures the export path where the generated projects will be stored. Must point to a folder.
@@ -142,15 +166,20 @@ class SoundLight():
         Args:
             path (str | Path): Path for the folder where the projects will be stored.
         """
-        if isinstance(path, str):
-            path = Path(path)
+        if not isinstance(path, (Path, str)):
+            raise ArgumentException('The path provided is invalid!')
+
+        path = Path(path)
+        if not path.is_dir():
+            raise ArgumentException('The path is not a directory!')
 
         if path.is_dir():
-            self._exportPath: Path = path
+            self._exportPath = path
+            self._exportPathSet = True
 
-    # ---------------------------------------------------------
+    # --------------------------------------------------------------------------
     #                           Running
-    # ---------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def run(self) -> None:
         """Analyzes the selected song, generates features and exports the results for the selected song.
@@ -163,8 +192,9 @@ class SoundLight():
         assert self._analysisAlgorithmSet
         assert self._generationAlgorithmSet
         assert self._exportAlgorithmSet
+        assert self._exportPathSet
 
-        song = self._fm.get_selected_song()
+        song = FileManager().get_selected_song()
 
         self._an.analyze(song)
 
@@ -174,9 +204,9 @@ class SoundLight():
         self._ex.set_song(song)
         self._ex.export(self._exportPath)
 
-    # ---------------------------------------------------------
+    # --------------------------------------------------------------------------
     #                       Utils
-    # ---------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def _print_song_data(self) -> str:
         """Returns the selected song's data.
@@ -186,7 +216,7 @@ class SoundLight():
         Raises:
             NothingSelectedException: if no song is selected.
         """
-        return self._fm.get_selected_song().__repr__()
+        return FileManager().get_selected_song().__repr__()
 
     def _save_song_data(self) -> None:
         """Saves the selected song's data.
@@ -202,11 +232,11 @@ class SoundLight():
         path = None
         try:
             folder_name = Conf()['export']['path'][get_OS()]
-            file_name = Path(self._fm.get_selected_song()['path']).stem
+            file_name = Path(FileManager().get_selected_song()['path']).stem
             path = Path(f"{folder_name}/{file_name}.json")
 
             with open(path, 'w') as f:
-                json.dump(self._fm.get_selected_song()._struct,
+                json.dump(FileManager().get_selected_song()._struct,
                           f, default=default)
         except NothingSelectedException as e:
             raise e

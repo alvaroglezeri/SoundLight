@@ -1,33 +1,49 @@
+import json
 from pathlib import Path
 import toml
+
+from src.core.exceptions import ArgumentException, InvalidStateException
 
 
 class Conf():
     """Stores the configuration parameters loaded from 'soundlight.toml'
     """
 
-    _DEFAULT_PATH = '/soundlight.toml'
-
-    def __new__(cls, config_path: Path | str | None = None):
+    def __new__(cls, config_path: Path | None = None):
         """
         Singleton implementation. The config is set on the first call.
         """
         if not hasattr(cls, 'instance'):
             cls.instance = object.__new__(cls)
-            cls.instance.__setup__(config_path)
+            try:
+                cls.instance.__setup__(config_path)
+            except Exception as e:
+                del cls.instance
+                raise e
         return cls.instance
 
-    def __setup__(self, config_path: Path | str | None = None) -> None:
+    @classmethod
+    def reset(cls) -> None:
+        if hasattr(cls, 'instance'):
+            del cls.instance
+
+    def __setup__(self, config_path: Path | None = None) -> None:
         """Loads the setup file into an internal dict.
 
         Args:
-            config_path (Path | str | None, optional): Path to the TOML file.
+            config_path (Path | None, optional): Path to the TOML file.
         """
-        if config_path is None:
-            config_path = self._DEFAULT_PATH
+        if config_path is None or not config_path.is_file():
+            raise ArgumentException('Invalid path to config file provided!')
 
-        with open(config_path, "r") as f:
-            self._config = toml.load(f)
+        try:
+            with open(config_path, "r") as f:
+                self._config = toml.load(f)
+        except toml.TomlDecodeError as e:
+            raise ArgumentException(
+                'The content of the file cannot be parsed as TOML!')
+        if self._config is None:
+            raise ArgumentException('The file could not be loaded!')
 
     def __init__(self, config_path: Path | str | None = None) -> None:
         """Provides an access to the current Configuration, regardless of context.
@@ -45,6 +61,8 @@ class Conf():
         Raises:
             ValueError: When the key is not present.
         """
+        if not self._config:
+            raise InvalidStateException('No configuration data exists!')
         try:
             return self._config[key]
         except:

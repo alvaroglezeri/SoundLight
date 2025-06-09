@@ -1,3 +1,4 @@
+from genericpath import exists
 from io import BufferedReader
 from typing import List
 from deprecated import deprecated
@@ -17,7 +18,9 @@ class FileManager():
     """
     _FORMAT: tuple = ('wav', tinytag._Wave)
 
-    # ----- CLASS METHODS -----
+    # --------------------------------------------------------------------------
+    # CLASS METHODS
+    # -------------------------------------------------------------------------------
     def __new__(cls):
         """
         Singleton implementation. The config is set on the first call.
@@ -57,7 +60,14 @@ class FileManager():
         except:
             pass
 
-    # ----- FILE MANAGING -----
+    @classmethod
+    def reset(cls) -> None:
+        if hasattr(cls, 'instance'):
+            del cls.instance
+
+    # --------------------------------------------------------------------------
+    # FILE MANAGING
+    # -------------------------------------------------------------------------------
 
     def get_songs(self) -> List[Song]:
         """Returns all loaded songs.
@@ -97,6 +107,8 @@ class FileManager():
 
         # FileManager manages the life cycle of the files.
         try:
+            if not Path(path).exists() or not Path(path).is_file():
+                raise FileNotFoundError('This file could not be found!')
             # Checks whether the file has a valid format
             if not TinyTag.is_supported(path):
                 validFormats: str = ' '.join(
@@ -123,22 +135,17 @@ class FileManager():
                 self._songs.append(song)
                 Logger.log(LOG_CAT.SUCCESS, f"Loaded '{song['title']}'.")
             else:
-                Logger.log(LOG_CAT.ERROR,
-                           f"File '{song['title']}' already exists.")
                 raise DuplicateElementException(
                     f'This file is already loaded.')
 
         except DuplicateElementException as dee:
-            Logger.log(LOG_CAT.ERROR, dee)
             raise dee
 
         except TinyTagException as tte:
             # FIXME: What if the file is not audio?
-            Logger.log(LOG_CAT.ERROR, f'TinyTag error: {tte}')
             raise InvalidFileException(f'Invalid file because: "{tte}"')
 
         except InvalidFileException as ife:
-            Logger.log(LOG_CAT.ERROR, f'This format is not supported!')
             raise ife
 
         except Exception as e:
@@ -209,7 +216,9 @@ class FileManager():
 
         return newPath
 
-    # ----- SONG SELECTION -----
+    # --------------------------------------------------------------------------
+    # SONG SELECTION
+    # -------------------------------------------------------------------------------
 
     def has_selected_song(self) -> bool:
         """Returns ``True`` if the FileManager has a song selected, ``False`` otherwise.
@@ -223,8 +232,12 @@ class FileManager():
             n (int): Index of the song in the list.
 
         Raises:
+            ArgumentException: If the argument is invalid.
             NotFoundException: If the song cannot be loaded.
         """
+
+        if not isinstance(n, int):
+            raise ArgumentException('The argument is invalid!')
         try:
             self._selected = self._songs[n]
             if self._selected:
