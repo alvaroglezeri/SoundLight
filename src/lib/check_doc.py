@@ -1,3 +1,6 @@
+"""Checks which methods of the whole codebase have documentation strings.
+Useful to check completion of code.
+"""
 import os
 import ast
 
@@ -5,12 +8,11 @@ from typing import Generator
 
 
 EXCLUDE_DIRS = {"venv", ".venv", "__pycache__", "env", ".env", "site-packages"}
-output_file = "faltantes_docstrings.txt"
+output_file = "missing_docstrings.txt"
 
 
 def get_py_files(directory) -> Generator:
     for root, dirs, files in os.walk(directory):
-        # Excluir carpetas no deseadas
         dirs[:] = [
             d for d in dirs if d not in EXCLUDE_DIRS and not d.startswith(".")]
         for file in files:
@@ -89,4 +91,4 @@ if __name__ == "__main__":
         f.write("\n".join(output_lines))
 
     print(
-        f"Análisis completado. Resultados guardados en '{output_file}'")
+        f"Finished! Results saved in '{output_file}'")

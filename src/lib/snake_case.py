@@ -1,10 +1,13 @@
+"""Checks whether the name of the functions in the directory follows the Python code conventions.
+"""
+
 import os
 import ast
 import re
 from typing import Generator
 
 EXCLUDE_DIRS = {"venv", ".venv", "__pycache__", "env", ".env", "site-packages"}
-output_file = "funciones_no_snake_case.txt"
+output_file = "functions_not_snake_cased.txt"
 snake_case_pattern = re.compile(r"^_?_?[a-z_][a-z0-9_]*$")
 
 
@@ -68,10 +71,10 @@ def format_tree(tree, prefix="") -> list[str]:
 
 
 if __name__ == "__main__":
-    directorio = "."
+    dir = "."
     result_data = {}
 
-    for py_file in get_py_files(directorio):
+    for py_file in get_py_files(dir):
         analyze_file(py_file, result_data)
 
     tree = build_tree(result_data)
@@ -81,4 +84,4 @@ if __name__ == "__main__":
     with open(output_file, "w", encoding="utf-8") as f:
         f.write("\n".join(output_lines))
 
-    print(f"Análisis completado. Resultados guardados en '{output_file}'")
+    print(f"Finished! Results stored in '{output_file}'")

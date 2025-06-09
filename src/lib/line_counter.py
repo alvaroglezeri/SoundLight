@@ -1,15 +1,17 @@
+"""Counts the number of lines in the files of a directory.
+"""
 import os
 import json
 from typing import List, Dict, Any
 
 
-def contar_lineas(directorio: str, extensiones: List[str], ordenar_por: str = "ruta") -> Dict[str, Any]:
+def count_lines(dir: str, ext: List[str], sort_by: str = "path") -> Dict[str, Any]:
     archivos: Dict[str, int] = {}
     total = 0
 
-    for root, _, files in os.walk(directorio):
+    for root, _, files in os.walk(dir):
         for file in files:
-            if any(file.endswith(ext) for ext in extensiones):
+            if any(file.endswith(ext) for ext in ext):
                 ruta = os.path.join(root, file)
                 try:
                     with open(ruta, 'r', encoding='utf-8', errors='ignore') as f:
@@ -19,7 +21,7 @@ def contar_lineas(directorio: str, extensiones: List[str], ordenar_por: str = "r
                 except Exception as e:
                     print(f"Error leyendo {ruta}: {e}")
 
-    if ordenar_por == "lineas":
+    if sort_by == "lines":
         archivos_ordenados = dict(
             sorted(archivos.items(), key=lambda item: item[1], reverse=True))
     else:
@@ -31,10 +33,9 @@ def contar_lineas(directorio: str, extensiones: List[str], ordenar_por: str = "r
     }
 
 
-# Ejemplo de uso
 if __name__ == "__main__":
-    directorio = "./src"
-    extensiones = [".py", ".ipynb", ".md"]
-    ordenar_por = "lineas"  # o "ruta"
-    resultado = contar_lineas(directorio, extensiones, ordenar_por)
-    print(json.dumps(resultado, indent=4))
+    dir = "./src"
+    ext = [".py", ".ipynb", ".md"]
+    sort = "lines"  # or "path"
+    result = count_lines(dir, ext, sort)
+    print(json.dumps(result, indent=4))
