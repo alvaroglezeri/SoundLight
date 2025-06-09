@@ -7,7 +7,8 @@
         "[ ]",
         "[x]",
         "DOCUMENT",
-        "PROBLEM"
+        "PROBLEM",
+        "WRITE"
     ],
     "todo-tree.highlights.foregroundColourScheme": [
         "white",
@@ -17,7 +18,8 @@
         "white",
         "white",
         "green",
-        "red"
+        "red",
+        "grey"
     ],
     "todo-tree.highlights.highlightDelay": 250,
     "todo-tree.general.showActivityBarBadge": true,
@@ -63,9 +65,50 @@
             "icon": "question",
             "foreground": "red",
             "borderRadius": "0"
+        },
+        "WRITE": {
+            "icon": "log",
+            "foreground": "white",
+            "fontStyle": "italic",
+            "borderRadius": "0"
         }
     },
     "todo-tree.ripgrep.ripgrepMaxBuffer": 500,
-    "makefile.makefilePath": "U:\\TFG\\SoundLight\\NATTEN-Torch\\Makefile",
-    
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/CVS": true,
+        "**/.venv": true,
+        ".venv": true,
+        ".gitignore": true,
+        ".vscode": false,
+        "__init__.py": true,
+        "**/__init__.py": true,
+        "__pycache__": true,
+        "**/__pycache__": true
+    },
+    "explorerExclude.backup": {},
+    "python.analysis.inlayHints.callArgumentNames": "all",
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.inlayHints.variableTypes": true,
+    "python.analysis.typeEvaluation.analyzeUnannotatedFunctions": false,
+    "editor.tabCompletion": "on",
+    "workbench.editor.showTabs": "multiple",
+    "workbench.editor.tabActionCloseVisibility": true,
+    "workbench.editor.tabSizing": "fixed",
+    "window.density.editorTabHeight": "compact",
+    "notebook.cellFocusIndicator": "border",
+    "notebook.cellToolbarVisibility": "hover",
+    "editor.formatOnPaste": true,
+    "python.analysis.typeCheckingMode": "standard",
+    "python.analysis.autoImportCompletions": true,
+    "python.testing.pytestArgs": [
+        "tests",
+        "append"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
 }
