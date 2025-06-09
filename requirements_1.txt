@@ -17,3 +17,5 @@ typing;
 lxml;
 #
 toml;
+#
+pytest;

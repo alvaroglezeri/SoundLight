@@ -1,4 +1,4 @@
-# Generate with PS > pipreqs . --force
+# Generated with PS > pipreqs . --force
 #numpy==2.1.1 #2.0.2
 torch
 #==2.4.1
