@@ -163,7 +163,7 @@ class D5_RGBWFlash(IFeatureExporter):
             block.set("SPEED", "1")
             block.set("ALLOWLOOP", "1")
             block.set("CONFORM_TO_TEMPO", "1")
-            block.set("SCENEUUID", self._SCENES[feature.mode()])
+            block.set("SCENEUUID", self._SCENES[feature.get_mode()])
 
             block.append(create_element("DASTLSUBLINES", {"DASTLNB": "0"}))
 
