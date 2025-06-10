@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+# TODO: Apply this models into the patch
+
 
 class IFixture(ABC):
     def __init__(self, coords: tuple[int, int, int], address: int, universe: int) -> None:

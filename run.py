@@ -23,7 +23,7 @@ if __name__ == "__main__":
             r"resources/CamelPhat, Yannis, Foals - Hypercolour.wav")
         sl.select_song(0)
 
-        sl.set_patch(r"resources/patch.json")
+        sl.set_patch_from_path(r"resources/patch.json")
 
         sl.set_analysis_algorithm(SimpleAnalysisAlgorithm())
         sl.set_generation_algorithm(SimpleGenerationAlgorithm())

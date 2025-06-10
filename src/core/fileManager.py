@@ -237,7 +237,7 @@ class FileManager():
         """
 
         if not isinstance(n, int):
-            raise ArgumentException('The argument is invalid!')
+            raise InvalidArgumentException('The argument is invalid!')
         try:
             self._selected = self._songs[n]
             if self._selected:

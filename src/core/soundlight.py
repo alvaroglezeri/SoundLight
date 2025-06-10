@@ -3,7 +3,7 @@ import json
 from typing import List
 
 from .conf import Conf
-from .exceptions import ArgumentException, NothingSelectedException
+from .exceptions import InvalidArgumentException, InvalidStateException, NothingSelectedException
 from .fileManager import FileManager
 from .analysis.analyzer import Analyzer, IAnalysisAlgorithm
 from .generation.generator import Generator, IGenerationAlgorithm
@@ -23,7 +23,8 @@ class SoundLight():
             configFile_path (Path | str): Path to the TOML file containing the configuration options for the execution.
         """
         if not isinstance(config_file_path, (Path, str)):
-            raise ArgumentException('Configuration file path not provided!')
+            raise InvalidArgumentException(
+                'Configuration file path not provided!')
 
         self._load_config(config_file_path)
         # Start FileManager
@@ -104,9 +105,13 @@ class SoundLight():
     #                     Configuration
     # --------------------------------------------------------------------------
 
-    def set_patch(self, path: str | Path) -> None:
+    def set_patch_from_path(self, path: str | Path) -> None:
         """Loads a .json file containing the patch description, and configures the algorithms with it.
         Consult the documentation for format expectations.
+
+        Raises:
+            ValueError: If the path provided cannot be opened.
+            Toml
 
         Args:
             path (str | Path): Path to the .json file containing the patch.
@@ -131,7 +136,7 @@ class SoundLight():
             self._an.set_algorithm(algorithm)
             self._analysisAlgorithmSet = True
         else:
-            raise ArgumentException(
+            raise InvalidArgumentException(
                 'The algorithm supplied does not implement the IAnalysisAlgorithm interface!')
 
     def set_generation_algorithm(self, algorithm: IGenerationAlgorithm) -> None:
@@ -144,7 +149,7 @@ class SoundLight():
             self._gen.set_algorithm(algorithm)
             self._generationAlgorithmSet = True
         else:
-            raise ArgumentException(
+            raise InvalidArgumentException(
                 'The algorithm supplied does not implement the IGenerationAlgorithm interface!')
 
     def set_export_algorithm(self, algorithm: IExportAlgorithm) -> None:
@@ -157,7 +162,7 @@ class SoundLight():
             self._ex.set_algorithm(algorithm)
             self._exportAlgorithmSet = True
         else:
-            raise ArgumentException(
+            raise InvalidArgumentException(
                 'The algorithm supplied does not implement the IExportAlgorithm interface!')
 
     def set_export_path(self, path: str | Path) -> None:
@@ -167,11 +172,11 @@ class SoundLight():
             path (str | Path): Path for the folder where the projects will be stored.
         """
         if not isinstance(path, (Path, str)):
-            raise ArgumentException('The path provided is invalid!')
+            raise InvalidArgumentException('The path provided is invalid!')
 
         path = Path(path)
         if not path.is_dir():
-            raise ArgumentException('The path is not a directory!')
+            raise InvalidArgumentException('The path is not a directory!')
 
         if path.is_dir():
             self._exportPath = path
@@ -186,21 +191,26 @@ class SoundLight():
 
         Raises:
             NothingSelectedException: If there is no selected song.
-            AssertionError: If either the patch, analysis algorithm, generation algorithm or export algorithm are not set.
+            InvalidStateException: If either the patch, analysis algorithm, generation algorithm or export algorithm are not set.
         """
-        assert self._patchLoaded
-        assert self._analysisAlgorithmSet
-        assert self._generationAlgorithmSet
-        assert self._exportAlgorithmSet
-        assert self._exportPathSet
+        if not self._patchLoaded or self._patch is None:
+            raise InvalidStateException('The patch has not been loaded!')
+        if not self._analysisAlgorithmSet:
+            raise InvalidStateException(
+                'The analysis algorithm has not been loaded!')
+        if not self._generationAlgorithmSet:
+            raise InvalidStateException(
+                'The generation algorithm has not been loaded!')
+        if not self._exportAlgorithmSet:
+            raise InvalidStateException(
+                'The export algorithm has not been loaded!')
+        if not self._exportPathSet:
+            raise InvalidStateException('The export path has not been loaded!')
 
         song = FileManager().get_selected_song()
-
         self._an.analyze(song)
-
         self._gen.set_patch(self._patch)
         self._gen.generate(song)
-
         self._ex.set_song(song)
         self._ex.export(self._exportPath)
 

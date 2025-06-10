@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List
 
+from src.core.exceptions import InvalidArgumentException
+
 
 class IFeature(ABC):
     """Feature interface
@@ -9,6 +11,16 @@ class IFeature(ABC):
         get_timestamp (int): test
     """
     _registry = {}
+
+    @abstractmethod
+    def __init__(self, timestamp: int, duration: int) -> None:
+        if int(timestamp) != timestamp or timestamp < 0:
+            raise InvalidArgumentException('Invalid timestamp provided!')
+        if int(duration) != duration or duration < 0:
+            raise InvalidArgumentException('Invalid duration provided!')
+
+        self._timestamp = timestamp
+        self._duration = duration
 
     def __init_subclass__(cls, **kwargs):
         """
@@ -36,7 +48,7 @@ class IFeature(ABC):
         ...
 
     @abstractmethod
-    def mode(self) -> str:
+    def get_mode(self) -> str:
         """Returns this feature's mode of operation.
 
         Returns:
@@ -144,9 +156,7 @@ class SimpleFlash(IFeature):
     _MODES = ['all', 'even', 'odd']
 
     def __init__(self, timestamp: int, duration: int, mode: str | None = None) -> None:
-        self._timestamp = timestamp
-        self._duration = duration
-
+        super().__init__(timestamp, duration)
         if not mode or mode not in self._MODES:
             mode = self._MODES[0]
         self._mode = mode
@@ -160,7 +170,7 @@ class SimpleFlash(IFeature):
     def get_duration(self) -> int:
         return self._duration
 
-    def mode(self) -> str:
+    def get_mode(self) -> str:
         return self._mode
 
     @classmethod
@@ -187,8 +197,7 @@ class RGBWFlash(IFeature):
     _MODES = ['white', 'red', 'green', 'blue']
 
     def __init__(self, timestamp: int, duration: int, mode: str | None = None) -> None:
-        self._timestamp = timestamp
-        self._duration = duration
+        super().__init__(timestamp, duration)
 
         if not mode or mode not in self._MODES:
             mode = self._MODES[0]
@@ -209,7 +218,7 @@ class RGBWFlash(IFeature):
     def get_duration(self) -> int:
         return self._duration
 
-    def mode(self) -> str:
+    def get_mode(self) -> str:
         return self._mode
 
     @classmethod
@@ -235,8 +244,7 @@ class RotFlash(IFeature):
     _MODES = ['yellow', 'magenta', 'cyan']
 
     def __init__(self, timestamp: int, duration: int, mode: str | None = None) -> None:
-        self._timestamp = timestamp
-        self._duration = duration
+        super().__init__(timestamp, duration)
 
         if not mode or mode not in self._MODES:
             mode = self._MODES[0]
@@ -251,7 +259,7 @@ class RotFlash(IFeature):
     def get_duration(self) -> int:
         return self._duration
 
-    def mode(self) -> str:
+    def get_mode(self) -> str:
         return self._mode
 
     @classmethod

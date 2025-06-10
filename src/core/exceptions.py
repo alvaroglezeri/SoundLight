@@ -51,8 +51,8 @@ class NothingSelectedException(Exception):
         super().__init__(msg)
 
 
-class ArgumentException(Exception):
-    """Raised when checking function arguments.
+class InvalidArgumentException(Exception):
+    """Raised when checking function arguments fails.
     """
 
     def __init__(self, msg=f'The argument provided is invalid!'):

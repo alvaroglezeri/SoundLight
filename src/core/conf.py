@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 import toml
 
-from src.core.exceptions import ArgumentException, InvalidStateException
+from src.core.exceptions import InvalidArgumentException, InvalidStateException
 
 
 class Conf():
@@ -34,16 +34,17 @@ class Conf():
             config_path (Path | None, optional): Path to the TOML file.
         """
         if config_path is None or not config_path.is_file():
-            raise ArgumentException('Invalid path to config file provided!')
+            raise InvalidArgumentException(
+                'Invalid path to config file provided!')
 
         try:
             with open(config_path, "r") as f:
                 self._config = toml.load(f)
         except toml.TomlDecodeError as e:
-            raise ArgumentException(
+            raise InvalidArgumentException(
                 'The content of the file cannot be parsed as TOML!')
         if self._config is None:
-            raise ArgumentException('The file could not be loaded!')
+            raise InvalidArgumentException('The file could not be loaded!')
 
     def __init__(self, config_path: Path | str | None = None) -> None:
         """Provides an access to the current Configuration, regardless of context.

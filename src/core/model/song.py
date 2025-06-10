@@ -3,6 +3,8 @@ from io import BufferedReader
 from math import ceil
 import json
 
+from src.core.exceptions import InvalidArgumentException
+
 from ..logger import Logger, LOG_CAT
 from ..model.features import IFeature
 
@@ -19,6 +21,10 @@ class Song():
     # -------------------------------------------------------------------------------
     def __init__(self, file: BufferedReader) -> None:
         # Building internal structure of the song as a dict
+        if file is None or not isinstance(file, BufferedReader) or file.closed:
+            raise InvalidArgumentException(
+                'The provided file descriptor is invalid!')
+
         self._struct: dict = {
             "file": file,
             "path": file.name,
@@ -39,7 +45,7 @@ class Song():
         return hash(self['path'])
 
     def __repr__(self) -> str:
-        return json.dumps(self._struct, default=self.song_repr_helper)
+        return json.dumps(self._struct, default=self._song_repr_helper)
 
     def __str__(self) -> str:
         def secToMin(seconds) -> str:
@@ -57,7 +63,7 @@ class Song():
             Logger.log(LOG_CAT.ERROR, e)
             return f"Error getting properties for {self['path']}"
 
-    # TODO: Replace calls to __getitem__ (song['key']) with this method, as it provides a default
+    # TODO: Replace calls to __getitem__ (song['key']) with this method, as it allows providing a default
     def get(self, key: str):
         return self._struct.get(key)
 
@@ -67,14 +73,14 @@ class Song():
     def __setitem__(self, key, value) -> None:
         self._struct[key] = value
 
-    def song_repr_helper(self, object):
+    def _song_repr_helper(self, object) -> str:
         if isinstance(object, ndarray):
-            return list(object)
+            return str(list(object))
 
         if isinstance(object, BufferedReader):
             return object.name
 
         if isinstance(object, IFeature):
-            return object.serialize()
-
-        return str(object)
+            return json.dumps(object.serialize())
+        else:
+            return str(object)
