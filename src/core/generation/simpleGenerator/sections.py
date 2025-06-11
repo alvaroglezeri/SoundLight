@@ -5,7 +5,7 @@ from allin1.typings import Segment
 from src.core.model.features import IFeature, RGBWFlash, RotFlash, SimpleFlash
 
 
-class SectionGenerator():
+class Sections():
     """This class takes in a list of segments, and a list of beats, 
     """
 

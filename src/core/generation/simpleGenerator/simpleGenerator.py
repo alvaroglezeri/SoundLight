@@ -1,6 +1,6 @@
 from allin1.typings import Segment
 
-from src.core.generation.simpleGenerator.sectionGenerator import SectionGenerator
+from src.core.generation.simpleGenerator.sections import Sections
 
 from ...logger import Logger, LOG_CAT
 from ...model.features import IFeature
@@ -30,8 +30,8 @@ class SimpleGenerator(IGenerationAlgorithm):
 
         # The SimpleGenerator just generates features based on the section.
         # No other metadata is used for now.
-        sg = SectionGenerator(self._segments, self._bass)
-        ret.extend(sg.generate_section_specific())
+        sections = Sections(self._segments, self._bass)
+        ret.extend(sections.generate_section_specific())
 
         return ret
 
