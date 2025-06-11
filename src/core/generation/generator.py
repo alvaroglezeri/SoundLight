@@ -86,6 +86,7 @@ class Generator():
 
         Logger.log(LOG_CAT.INFO, f'Starting feature generation...')
 
+        # TODO: Use the patch data to calculate which features to generate.
         song['patch'] = self._patch
         self._generationAlgorithm.load_metadata(song['metadata'])
 
