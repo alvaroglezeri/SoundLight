@@ -17,7 +17,7 @@ class Configuration(Section):
     @staticmethod
     def _deflate_touchdock(element: str | XMLElement) -> str:
         """Returns the encoded, deflated Touch Control data in the correct format.
-        DOCUMENT: This had to be 
+        DOCUMENT: This had to be reverse engineered
 
         Args:
             element (str | XMLElement): XMLElement to deflate.

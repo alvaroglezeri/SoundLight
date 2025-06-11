@@ -142,7 +142,6 @@ class FileManager():
             raise dee
 
         except TinyTagException as tte:
-            # FIXME: What if the file is not audio?
             raise InvalidFileException(f'Invalid file because: "{tte}"')
 
         except InvalidFileException as ife:

@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
 
+from src.core.exceptions import InvalidArgumentException, InvalidStateException
+
 from ..conf import Conf
 from ..model.song import Song
 from ..logger import Logger, LOG_CAT
@@ -42,13 +44,16 @@ class Analyzer():
         """
         self._analysisAlgorithm: IAnalysisAlgorithm | None = None
 
-    def set_algorithm(self, analysisAalgorithm: IAnalysisAlgorithm) -> None:
+    def set_algorithm(self, algorithm: IAnalysisAlgorithm) -> None:
         """Sets the analysis algorithm for this analysis run.
 
         Args:
-            analysisAalgorithm (IAnalysisAlgorithm): algorithm object.
+            algorithm (IAnalysisAlgorithm): algorithm object.
         """
-        self._analysisAlgorithm = analysisAalgorithm
+        if not isinstance(algorithm, IAnalysisAlgorithm):
+            raise InvalidArgumentException(
+                'The algorithm provided is invalid!')
+        self._analysisAlgorithm = algorithm
 
     def analyze(self, song: Song) -> None:
         """Analyzes the provided song. Stores results within the song itself.
@@ -57,15 +62,18 @@ class Analyzer():
             song (Song): Song object to analyze.
 
         Raises:
-            AssertionError: if the analysis algoritm is not set.
+            InvalidArgumentException: if the song is not valid.
+            InvalidStateException: if the analysis algoritm is not set.
         """
-        assert self._analysisAlgorithm is not None
+        if not self._analysisAlgorithm:
+            raise InvalidStateException(
+                'The analysis algorithm has not been set!')
 
-        if song:
-            self._analysisAlgorithm.set_song(song)
-            self._analysisAlgorithm.analyze()
+        if not isinstance(song, Song):
+            raise InvalidArgumentException('The song provided is invalid!')
 
-        else:
-            raise ValueError('Song cannot be None')
+        self._analysisAlgorithm.set_song(song)
+        self._analysisAlgorithm.analyze()
+
 
 # --------------------------------------------------------------------------

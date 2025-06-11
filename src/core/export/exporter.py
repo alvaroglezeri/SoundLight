@@ -3,6 +3,8 @@ from io import BytesIO
 from pathlib import Path
 from typing import List
 
+from src.core.exceptions import InvalidArgumentException, InvalidStateException
+
 from ..model.song import Song
 from ..logger import Logger, LOG_CAT
 
@@ -50,17 +52,19 @@ class Exporter():
     def __init__(self) -> None:
         """Constructs the exporter object.        
         """
-        self._song: Song | None = None
-        self._exportAlgorithm: IExportAlgorithm | None = None
+        self._song = None
+        self._exportAlgorithm = None
 
-    def set_algorithm(self, exportAlgorithm: IExportAlgorithm) -> None:
+    def set_algorithm(self, algorithm: IExportAlgorithm) -> None:
         """Sets the algorithm to use. 
 
         Args:
-            exportAlgorithm (IExportAlgorithm): Algorithm to use.
+            algorithm (IExportAlgorithm): Algorithm to use.
         """
-        if exportAlgorithm is not None:
-            self._exportAlgorithm = exportAlgorithm
+        if not isinstance(algorithm, IExportAlgorithm):
+            raise InvalidArgumentException(
+                'The algorithm provided is invalid!')
+        self._exportAlgorithm = algorithm
 
     def set_song(self, song: Song) -> None:
         """Sets the song for which to generate. The features must be already generated.
@@ -68,11 +72,12 @@ class Exporter():
         Args:
             song (Song): Song to use.
         """
-        if song is not None:
-            self._song = song
+        if not isinstance(song, Song):
+            raise InvalidArgumentException('The song provided is invalid!')
+        self._song = song
 
     def export(self, path: Path):
-        """Runs te export process
+        """Runs te export process. Saves the result file in the provided path.
 
         Args:
             path (Path): _description_
@@ -81,12 +86,14 @@ class Exporter():
             ValueError: If either the song or export algorithm are None, or the output format of the algorithm is invalid.
         """
 
-        if self._song == None:
-            Logger.log(LOG_CAT.ERROR, 'Song is not set!')
-            raise ValueError('Song is not set!')
-        elif self._exportAlgorithm == None:
-            Logger.log(LOG_CAT.ERROR, 'Exporter is not set!')
-            raise ValueError('Exporter is not set!')
+        if not isinstance(path, Path):
+            raise InvalidArgumentException('The path provided is invalid!')
+
+        if not self._song:
+            raise InvalidStateException('The song has not been set!')
+        if not self._exportAlgorithm:
+            raise InvalidStateException(
+                'The export algorithm has not been set!')
 
         try:
             # Build the export path
@@ -96,18 +103,15 @@ class Exporter():
 
             # Run the export process
             self._exportAlgorithm.export(self._song)
+            ret = self._exportAlgorithm.get()
 
             # Save results
             with open(exportPath, 'wb') as output:
-                ret = self._exportAlgorithm.get()
-
                 if isinstance(ret, List):
                     for line in ret:
                         output.write(f'{line}\n'.encode())
                 elif isinstance(ret, BytesIO):
                     output.write(ret.read())
-                # elif isinstance(ret, bytes):
-                #     output.write(ret)
                 else:
                     raise ValueError(f'Invalid export format: {type(ret)}')
 

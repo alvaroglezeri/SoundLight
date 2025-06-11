@@ -41,6 +41,9 @@ class Generator():
 
     def set_algorithm(self, algorithm: IGenerationAlgorithm) -> None:
         """Sets the generation algorithm.
+
+        Args:
+            algorithm (IAnalysisAlgorithm): algorithm object.
         """
         if not isinstance(algorithm, IGenerationAlgorithm):
             raise InvalidArgumentException(
