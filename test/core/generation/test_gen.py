@@ -1,5 +1,3 @@
-
-
 from pathlib import Path
 from typing import Iterator, List
 from pytest import fixture, raises
@@ -58,7 +56,7 @@ class MockGenerationAlg(IGenerationAlgorithm):
 
 
 # -------------------------------------------------------------------------------
-# Generator Tests
+# Generator Song Tests
 # -------------------------------------------------------------------------------
 
 
@@ -88,6 +86,8 @@ def test_valid_song(get_song, get_valid_patch) -> None:
     gen.generate(get_song)
 
 # -------------------------------------------------------------------------------
+# Generator Algorithm Tests
+# -------------------------------------------------------------------------------
 
 
 def test_gen_no_alg() -> None:
@@ -115,6 +115,8 @@ def test_gen_valid_alg() -> None:
 
     assert gen._generationAlgorithm is mock
 
+# -------------------------------------------------------------------------------
+# Generator Patch Tests
 # -------------------------------------------------------------------------------
 
 
