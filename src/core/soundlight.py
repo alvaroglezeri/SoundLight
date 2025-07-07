@@ -60,10 +60,12 @@ class SoundLight():
 
     def close_selected_song(self) -> None:
         """Closes the file for the selected song.
-        If no song is selected, nothing happens.
+        If no song is selected, raises NothingSelectedException.
         """
         if FileManager().has_selected_song():
             FileManager().close_song(FileManager().get_selected_song())
+        else: 
+            raise NothingSelectedException()
 
     def add_song_from_path(self, path: str | Path) -> None:
         """Adds a song into the song list from a file.
@@ -241,9 +243,9 @@ class SoundLight():
 
         path = None
         try:
-            folder_name = Conf()['export']['path'][get_OS()]
+            folder_path = self._exportPath
             file_name = Path(FileManager().get_selected_song()['path']).stem
-            path = Path(f"{folder_name}/{file_name}.json")
+            path = Path(f"{folder_path}/{file_name}.json")
 
             with open(path, 'w') as f:
                 json.dump(FileManager().get_selected_song()._struct,
@@ -252,3 +254,12 @@ class SoundLight():
             raise e
         except OSError as e:
             raise ValueError(f'Provided an invalid path: {path}')
+
+
+    def _gpu_available(self) -> bool:
+        """Checks if a GPU is available in the system.
+
+        Returns:
+            bool: True if a GPU is available, False otherwise.
+        """
+        return self._an._gpu_available()
