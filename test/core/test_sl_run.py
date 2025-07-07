@@ -1,7 +1,6 @@
 from io import BytesIO
 from pathlib import Path
 import time
-from turtle import setup
 import typing
 from pytest import raises, fixture
 
@@ -15,10 +14,53 @@ from src.core.soundlight import SoundLight
 
 MAX_TIME_NO_GPU = 10
 MAX_TIME_GPU = 2
+_RUN_TEST_NB = 0
 
 # -------------------------------------------------------------------------------
 # Mock Algorithm Implementations
 # -------------------------------------------------------------------------------
+
+
+class MockExportAlg(IExportAlgorithm):
+    """Mock implementation of the IExportAlgorithm interface for testing."""
+
+    def __init__(self) -> None:
+        # By default, returns OK
+        self._returns_list()
+
+    def set_song(self, song: Song) -> None:
+        self._song = song
+
+    def get_keystring(self) -> str:
+        return 'MockExportAlg'
+
+    @property
+    def file_extension(self) -> str:
+        global _RUN_TEST_NB
+        _RUN_TEST_NB += 1
+        return f'test{_RUN_TEST_NB}'
+
+    def export(self) -> List[str] | BytesIO:
+        return self.ret  # type: ignore
+
+    # As the exporter expects a result, we test the handling
+
+    def _returns_list(self) -> 'MockExportAlg':
+        self.ret = ['line1', 'line2']
+        return self
+
+    def _returns_bytesIO(self) -> 'MockExportAlg':
+        self.ret = BytesIO(b'bytesbytesbytesbytesbytesbytes')
+        return self
+
+    def _returns_None(self) -> 'MockExportAlg':
+        self.ret = None
+        return self
+
+    def _returns_other(self) -> 'MockExportAlg':
+        self.ret = {'invalid': 'test'}
+        return self
+
 
 class MockAnalysisAlg(IAnalysisAlgorithm):
     """Mock implementation of the IAnalysisAlgorithm interface for testing."""
@@ -36,23 +78,13 @@ class MockAnalysisAlg(IAnalysisAlgorithm):
 class MockGenerationAlg(IGenerationAlgorithm):
     """Mock implementation of the IGenerationAlgorithm interface for testing."""
 
-    def load_metadata(self, metadata: dict) -> None:
-        ...
+    def set_song(self, song: Song) -> None:
+        self._song = song
+
+    def get_keystring(self) -> str:
+        return 'MockGenerationAlg'
 
     def generate(self) -> List[IFeature]:
-        ...
-
-
-class MockExportAlg(IExportAlgorithm):
-    """Mock implementation of the IExportAlgorithm interface for testing."""
-    @property
-    def file_extension(self) -> str:
-        ...
-
-    def export(self, song: Song) -> None:
-        ...
-
-    def get(self) -> List[str] | BytesIO:
         ...
 
 
@@ -174,6 +206,7 @@ def test_run_checks5(setup_sl: SoundLight) -> None:
 # Run Performance Tests
 # -------------------------------------------------------------------------------
 
+
 def test_sl_performance(setup_sl: SoundLight) -> None:
     start = time.perf_counter()
     sl = setup_sl
@@ -181,10 +214,10 @@ def test_sl_performance(setup_sl: SoundLight) -> None:
     end = time.perf_counter()
 
     time_taken = end - start    # In seconds
-    song_length = sl.get_selected_song()['metadata']['tinytag']['duration'] # In seconds
+    song_length = sl.get_selected_song(
+    )['metadata']['tinytag']['duration']  # In seconds
 
     if sl._gpu_available():
         assert time_taken < song_length * MAX_TIME_GPU
     else:
         assert time_taken < song_length * MAX_TIME_NO_GPU
-    

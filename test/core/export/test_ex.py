@@ -32,16 +32,19 @@ class MockExportAlg(IExportAlgorithm):
         # By default, returns OK
         self._returns_list()
 
+    def set_song(self, song: Song) -> None:
+        self._song = song
+
+    def get_keystring(self) -> str:
+        return 'MockExportAlg'
+
     @property
     def file_extension(self) -> str:
         global _TEST_NB
         _TEST_NB += 1
         return f'test{_TEST_NB}'
 
-    def export(self, song: Song) -> None:
-        ...
-
-    def get(self) -> List[str] | BytesIO:
+    def export(self) -> List[str] | BytesIO:
         return self.ret  # type: ignore
 
     # As the exporter expects a result, we test the handling

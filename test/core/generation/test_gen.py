@@ -48,8 +48,11 @@ def get_patch(case) -> dict:
 class MockGenerationAlg(IGenerationAlgorithm):
     """Mock implementation of the IGenerationAlgorithm interface for testing."""
 
-    def load_metadata(self, metadata: dict) -> None:
-        ...
+    def set_song(self, song: Song) -> None:
+        self._song = song
+
+    def get_keystring(self) -> str:
+        return 'MockGenerationAlg'
 
     def generate(self) -> List[IFeature]:
         ...
