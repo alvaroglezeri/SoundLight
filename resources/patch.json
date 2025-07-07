@@ -1,0 +1,376 @@
+{
+    "fixtureTypes": {
+        "ParCan": {
+            "fixtures": [
+                {
+                    "coords": [
+                        0,
+                        100,
+                        300
+                    ],
+                    "address": 1,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        30,
+                        100,
+                        300
+                    ],
+                    "address": 2,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        250,
+                        100,
+                        300
+                    ],
+                    "address": 3,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        230,
+                        100,
+                        300
+                    ],
+                    "address": 4,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        450,
+                        100,
+                        300
+                    ],
+                    "address": 5,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        430,
+                        100,
+                        300
+                    ],
+                    "address": 6,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        650,
+                        100,
+                        300
+                    ],
+                    "address": 7,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        630,
+                        100,
+                        300
+                    ],
+                    "address": 8,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        850,
+                        100,
+                        300
+                    ],
+                    "address": 9,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        830,
+                        100,
+                        300
+                    ],
+                    "address": 10,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        1000,
+                        100,
+                        300
+                    ],
+                    "address": 11,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        1030,
+                        100,
+                        300
+                    ],
+                    "address": 12,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        1200,
+                        100,
+                        300
+                    ],
+                    "address": 13,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        1230,
+                        100,
+                        300
+                    ],
+                    "address": 14,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        1400,
+                        100,
+                        300
+                    ],
+                    "address": 15,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        1430,
+                        100,
+                        300
+                    ],
+                    "address": 16,
+                    "universe": 1
+                }
+            ]
+        },
+        "RGBW": {
+            "fixtures": [
+                {
+                    "coords": [
+                        0,
+                        -100,
+                        300
+                    ],
+                    "address": 50,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        30,
+                        -100,
+                        300
+                    ],
+                    "address": 54,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        250,
+                        -100,
+                        300
+                    ],
+                    "address": 58,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        230,
+                        -100,
+                        300
+                    ],
+                    "address": 62,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        450,
+                        -100,
+                        300
+                    ],
+                    "address": 66,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        430,
+                        -100,
+                        300
+                    ],
+                    "address": 70,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        650,
+                        -100,
+                        300
+                    ],
+                    "address": 74,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        630,
+                        -100,
+                        300
+                    ],
+                    "address": 78,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        850,
+                        -100,
+                        300
+                    ],
+                    "address": 82,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        830,
+                        -100,
+                        300
+                    ],
+                    "address": 86,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        1000,
+                        -100,
+                        300
+                    ],
+                    "address": 90,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        1030,
+                        -100,
+                        300
+                    ],
+                    "address": 94,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        1200,
+                        -100,
+                        300
+                    ],
+                    "address": 98,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        1230,
+                        -100,
+                        300
+                    ],
+                    "address": 102,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        1400,
+                        -100,
+                        300
+                    ],
+                    "address": 106,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        1430,
+                        -100,
+                        300
+                    ],
+                    "address": 110,
+                    "universe": 1
+                }
+            ]
+        },
+        "MovingHead": {
+            "fixtures": [
+                {
+                    "coords": [
+                        0,
+                        0,
+                        500
+                    ],
+                    "address": 150,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        250,
+                        0,
+                        500
+                    ],
+                    "address": 168,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        450,
+                        0,
+                        500
+                    ],
+                    "address": 186,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        650,
+                        0,
+                        500
+                    ],
+                    "address": 204,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        850,
+                        0,
+                        500
+                    ],
+                    "address": 222,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        1000,
+                        0,
+                        500
+                    ],
+                    "address": 240,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        1200,
+                        0,
+                        500
+                    ],
+                    "address": 258,
+                    "universe": 1
+                },
+                {
+                    "coords": [
+                        1400,
+                        0,
+                        500
+                    ],
+                    "address": 276,
+                    "universe": 1
+                }
+            ]
+        }
+    }
+}
