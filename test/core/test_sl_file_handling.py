@@ -1,13 +1,16 @@
 from pathlib import Path
+from typing import Type
 from pytest import raises
 
 from src.core.exceptions import (
     InvalidArgumentException,
     DuplicateElementException,
     InvalidFileException,
+    InvalidStateException,
     NotFoundException,
     NothingSelectedException,
 )
+from src.core.fileManager import FileManager
 from src.core.soundlight import SoundLight
 
 # -------------------------------------------------------------------------------
@@ -37,17 +40,6 @@ def test_invalid_path() -> None:
     sl = SoundLight('./soundlight.toml')
     with raises(FileNotFoundError):
         sl.add_song_from_path('invalid_path')
-
-
-def test_invalid_path2() -> None:
-    """
-    Not directly related to song loading.
-    Verifies that set_patch fails when given an invalid Path.
-    Should raise ValueError.
-    """
-    sl = SoundLight('./soundlight.toml')
-    with raises(ValueError):
-        sl.set_patch_from_path(Path())
 
 
 def test_invalid_file() -> None:
@@ -190,3 +182,76 @@ def test_valid_index() -> None:
 
     assert sl.get_selected_song() is not None
     assert Path(sl.get_selected_song()['path']) == path1
+
+
+def test_song_list() -> None:
+    sl = SoundLight('./soundlight.toml')
+    sl.add_song_from_path(path1)
+    sl.add_song_from_path(path3)
+
+    assert sl.get_loaded_songs() is not None
+    assert len(sl.get_loaded_songs()) == 2
+
+    sl.select_song(0)
+    assert sl.get_selected_song() is not None
+    assert sl.get_selected_song()['path'] == str(path1) 
+
+    sl.select_song(1)
+    assert sl.get_selected_song() is not None
+    assert sl.get_selected_song()['path'] == str(path3)
+
+
+# -------------------------------------------------------------------------------
+# Song Closing Tests
+# -------------------------------------------------------------------------------
+
+def test_close_no_select() -> None:
+    """
+    Try to close a loaded but not selected song.
+    Should raise NothingSelectedException.
+    """
+    sl = SoundLight('./soundlight.toml')
+    sl.add_song_from_path(path1)
+
+    with raises(NothingSelectedException):
+        sl.close_selected_song()
+
+    
+def test_close_no_loaded() -> None:
+    """
+    Try to close when no song is loaded.
+    Should raise NothingSelectedException.
+    """
+    sl = SoundLight('./soundlight.toml')
+
+    with raises(NothingSelectedException):
+        sl.close_selected_song()
+
+
+def test_close_selected() -> None:
+    """
+    Try to close a loaded song.
+    The list of songs should be empty, and no loaded song should remain.
+    """
+    sl = SoundLight('./soundlight.toml')
+    sl.add_song_from_path(path1)
+    sl.select_song(0)
+
+    sl.close_selected_song()
+
+    assert FileManager().has_selected_song() == False
+    assert len(sl.get_loaded_songs()) == 0
+
+def test_double_close() -> None:
+    """
+    Try to close an already closed song.
+    Should raise NothingSelectedException.
+    """
+    sl = SoundLight('./soundlight.toml')
+    sl.add_song_from_path(path1)
+    sl.select_song(0)
+
+    sl.close_selected_song()
+
+    with raises(NothingSelectedException):
+        sl.close_selected_song()

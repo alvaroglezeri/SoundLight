@@ -1,5 +1,7 @@
 from io import BytesIO
 from pathlib import Path
+import time
+from turtle import setup
 import typing
 from pytest import raises, fixture
 
@@ -11,6 +13,8 @@ from src.core.model.features import IFeature, List
 from src.core.model.song import Song
 from src.core.soundlight import SoundLight
 
+MAX_TIME_NO_GPU = 10
+MAX_TIME_GPU = 2
 
 # -------------------------------------------------------------------------------
 # Mock Algorithm Implementations
@@ -165,3 +169,22 @@ def test_run_checks5(setup_sl: SoundLight) -> None:
 
     with raises(InvalidStateException):
         sl.run()
+
+# -------------------------------------------------------------------------------
+# Run Performance Tests
+# -------------------------------------------------------------------------------
+
+def test_sl_performance(setup_sl: SoundLight) -> None:
+    start = time.perf_counter()
+    sl = setup_sl
+    sl.run()
+    end = time.perf_counter()
+
+    time_taken = end - start    # In seconds
+    song_length = sl.get_selected_song()['metadata']['tinytag']['duration'] # In seconds
+
+    if sl._gpu_available():
+        assert time_taken < song_length * MAX_TIME_GPU
+    else:
+        assert time_taken < song_length * MAX_TIME_NO_GPU
+    

@@ -1,6 +1,5 @@
 from pathlib import Path
 from typing import Iterator
-from unittest.mock import Mock
 from pytest import fixture, raises
 
 from src.core.analysis.analyzer import Analyzer, IAnalysisAlgorithm

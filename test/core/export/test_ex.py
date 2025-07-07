@@ -70,6 +70,8 @@ class MockExportAlg(IExportAlgorithm):
 
 def test_no_song() -> None:
     ex = Exporter()
+    mock = MockExportAlg()
+    ex.set_algorithm(mock)
 
     with raises(TypeError):
         ex.set_song()
@@ -77,6 +79,8 @@ def test_no_song() -> None:
 
 def test_invalid_song() -> None:
     ex = Exporter()
+    mock = MockExportAlg()
+    ex.set_algorithm(mock)
 
     with raises(InvalidArgumentException):
         ex.set_song(object())
@@ -84,6 +88,8 @@ def test_invalid_song() -> None:
 
 def test_valid_song(get_song) -> None:
     ex = Exporter()
+    mock = MockExportAlg()
+    ex.set_algorithm(mock)
     song = get_song
     ex.set_song(song)
 

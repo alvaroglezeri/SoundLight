@@ -90,7 +90,7 @@ def test_valid_song(get_song, get_valid_patch) -> None:
 # -------------------------------------------------------------------------------
 
 
-def test_gen_no_alg() -> None:
+def test_set_no_alg() -> None:
     gen = Generator()
 
     with raises(TypeError):
@@ -99,7 +99,7 @@ def test_gen_no_alg() -> None:
     assert gen._generationAlgorithm == None
 
 
-def test_gen_invalid_alg() -> None:
+def test_set_invalid_alg() -> None:
     gen = Generator()
 
     with raises(InvalidArgumentException):
@@ -108,12 +108,18 @@ def test_gen_invalid_alg() -> None:
     assert gen._generationAlgorithm == None
 
 
-def test_gen_valid_alg() -> None:
+def test_set_valid_alg() -> None:
     gen = Generator()
     mock = MockGenerationAlg()
     gen.set_algorithm(mock)
 
     assert gen._generationAlgorithm is mock
+
+
+def test_gen_no_alg(get_song) -> None:
+    gen = Generator()
+    with raises(InvalidStateException):
+        gen.generate(get_song)
 
 # -------------------------------------------------------------------------------
 # Generator Patch Tests
