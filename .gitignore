@@ -1,13 +1,19 @@
 __pycache__
-/resources
-/env
-/.venv
+/.pytest_cache
+/.vscode
+/analyzed
 /demix
-/output
 /spec
-.vscode/launch.json
-.vscode/settings.json
+
+/output/*.json
+/resources/*.mp3
+/resources/*.wav
+/test/results
 src/demix/*
 src/output/*
 src/spec/*
+
+/env
+/.venv
+
 
