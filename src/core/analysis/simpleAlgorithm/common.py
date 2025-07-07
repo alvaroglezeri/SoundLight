@@ -18,7 +18,7 @@ from ...logger import Logger, LOG_CAT
 
 
 class Common():
-    """Contains useful functions for audio analysis. Mainly used in BassAnalysis.
+    """Contains useful functions for audio analysis. 
     This class should either be refactored in the future, to make it more reusable; or removed and its code distributed among the classes that use it, if it is too specific.
     """
 
@@ -29,7 +29,7 @@ class Common():
 
         Args:
             song (soundlight.model.song.Song): Song data
-            stem (str): Steam name to process
+            stem (str): Stem name to process
 
         Returns:
             dict: _description_

@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
+import torch
 
 from src.core.exceptions import InvalidArgumentException, InvalidStateException
 
@@ -74,6 +75,17 @@ class Analyzer():
 
         self._analysisAlgorithm.set_song(song)
         self._analysisAlgorithm.analyze()
+
+    def _gpu_available(self) -> bool:
+        """Checks if a GPU is available in the system.
+
+        Returns:
+            bool: True if a GPU is available, False otherwise.
+        """
+        try:
+            return torch.cuda.is_available()
+        except:
+            return False
 
 
 # --------------------------------------------------------------------------

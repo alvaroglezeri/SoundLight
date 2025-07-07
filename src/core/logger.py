@@ -26,28 +26,7 @@ class LOG_CAT(Enum):
     DEBUG = 'DEBG'
 
 
-class ILogger(ABC):
-    """All loggers for SoundLight should follow this interface.
-    """
-    def __new__(cls):
-        """
-        Singleton implementation for the logger.
-        """
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(ILogger, cls).__new__(cls)
-        return cls.instance
-
-    @staticmethod
-    @abstractmethod
-    def log(category: LOG_CAT, msg) -> None:
-        ...
-
-    @staticmethod
-    def is_enabled() -> bool:
-        ...
-
-
-class Logger(ILogger):
+class Logger():
     """
     Default logger for the application.
     """

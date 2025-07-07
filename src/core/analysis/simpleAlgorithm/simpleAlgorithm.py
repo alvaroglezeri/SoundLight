@@ -18,14 +18,14 @@ class SimpleAlgorithm(IAnalysisAlgorithm):
     def set_song(self, song: Song) -> None:
         self._song = song
 
+    def get_keystring(self) -> str:
+        return 'simpleAlgorithm'
+
     def analyze(self) -> None:
         self._key_analysis()
         self._beats_deeprhythm()
         self._sections_aio()
         self._bass_analysis()
-
-    def get_keystring(self) -> str:
-        return 'simpleAlgorithm'
 
     # --------------------------------------------------------------------------
 

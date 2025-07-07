@@ -87,6 +87,8 @@ class FileManager():
             raise NotFoundException()
         else:
             try:
+                if self._selected is song:
+                    self._selected = None
                 song['file'].close()
                 self._songs.remove(song)
             except Exception as e:
