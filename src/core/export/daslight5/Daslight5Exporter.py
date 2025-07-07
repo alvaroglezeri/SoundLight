@@ -3,6 +3,7 @@ from typing import List
 import lxml.etree as etree
 from lxml.etree import Element as NewElement
 from lxml.etree import _Element as XMLElement
+from src.core.exceptions import InvalidArgumentException
 
 from ...conf import Conf
 from ...export.exporter import IExportAlgorithm
@@ -64,8 +65,6 @@ class Daslight5Exporter(IExportAlgorithm):
     """Export algorithm for Daslight 5's .dvc files. Generates the patch, the scenes and a timeline scene with all features placed.
     """
 
-    _FILE_EXTENSION = 'dvc'
-
     def __init__(self) -> None:
         """
         Represents and builds the .dvc file.
@@ -73,28 +72,20 @@ class Daslight5Exporter(IExportAlgorithm):
         Call the export() method to start the XMLElement exportation, and the get() method to obtain the results.
         """
         self.dlmFile: XMLElement | None = None
-        self.done: bool = False
+
+    def set_song(self, song: Song) -> None:
+        self._song = song
+
+    def get_keystring(self) -> str:
+        return 'daslight5'
 
     @property
     def file_extension(self) -> str:
-        return self._FILE_EXTENSION
-
-    def get(self) -> List[str]:
-        """
-        Returns the XML file as a list of strings. If the export is not finished, returns None.
-        """
-        if not self.done:
-            raise ValueError('Export not finished!')
-        if self.dlmFile != None:
-            ret: str = etree.tostring(
-                self.dlmFile, pretty_print=True, encoding="unicode")  # type: ignore reportCallIssue
-            return ret.splitlines()
-        else:
-            raise ValueError('Export not finished!')
+        return 'dvc'
 
     # --------------------------------------------------------------------------
 
-    def export(self, song: Song) -> None:
+    def export(self) -> List[str]:
         """Runs the export process for this song. Feature generation must be complete, otherwise no features will be generated.
 
         Args:
@@ -105,43 +96,35 @@ class Daslight5Exporter(IExportAlgorithm):
         from core.export.daslight5.sections.patchs import Patchs
         from core.export.daslight5.sections.fixturegroups import FixtureGroups
         from core.export.daslight5.sections.scenes import Scenes
+        # from core.export.daslight5.sections.shortcuts import Shortcuts
         from core.export.daslight5.sections.touch import Touch
+        # from core.export.daslight5.sections.devices import Devices
 
-        # Root
         attribs: dict = Conf()['export']['daslight5']['dlmfile']
+
         self.dlmFile = create_element('DLMFILE', attribs)
 
-        # Section -> CONFIGURATION
         configuration = Configuration(self.dlmFile)
-        self.dlmFile.append(configuration.write(song))
-        print(f'Successfully created CONFIGURATION')
+        self.dlmFile.append(configuration.write(self._song))
 
-        # Section -> PATCHS
         patchs = Patchs(self.dlmFile)
-        self.dlmFile.append(patchs.write(song))
-        print(f'Successfully created PATCHS')
+        self.dlmFile.append(patchs.write(self._song))
 
-        # Section -> FIXTUREGROUPS
         fixturegroups = FixtureGroups(self.dlmFile)
-        self.dlmFile.append(fixturegroups.write(song))
-        print(f'Successfully created FIXTUREGROUPS')
+        self.dlmFile.append(fixturegroups.write(self._song))
 
-        # Section -> SCENES
         scenes = Scenes(self.dlmFile)
-        self.dlmFile.append(scenes.write(song))
-        print(f'Successfully created SCENES')
+        self.dlmFile.append(scenes.write(self._song))
 
-        # Section -> SHORTCUTS
+        # shortcuts = Shortcuts(self.dlmFile)
         self.dlmFile.append(create_element('SHORTCUTS'))
-        print(f'Successfully created SHORTCUTS')
 
-        # Section -> TOUCH
         touch = Touch(self.dlmFile)
-        self.dlmFile.append(touch.write(song))
-        print(f'Successfully created TOUCH')
+        self.dlmFile.append(touch.write(self._song))
 
-        # Section -> DEVICES
+        # devices = Devices(self.dlmFile)
         self.dlmFile.append(create_element('DEVICES'))
-        print(f'Successfully created DEVICES')
 
-        self.done = True
+        ret: str = etree.tostring(
+            self.dlmFile, pretty_print=True, encoding="unicode")  # type: ignore reportCallIssue
+        return ret.splitlines()
