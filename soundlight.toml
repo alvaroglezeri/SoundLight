@@ -1,3 +1,46 @@
+# --------------------------------------------------------------------------
+# Analysis configuration
+# --------------------------------------------------------------------------
+[analysis]
+
+[analysis.simpleAlgorithm]
+
+[analysis.simpleAlgorithm.aio]
+# out_dir = './analyzed' --> Not saving results
+visualize = false
+sonify = false
+include_activations = false
+include_embeddings = false
+demix_dir = './demix/htdemucs'
+overwrite = false
+multiprocess = true
+
+[analysis.simpleAlgorithm.bass]
+threshold_percentage = 0.025
+rms_params = { frame_length = 4096, hop_length = 1024 }
+display = false
+sonify = false
+save_dir = ''
+
+# --------------------------------------------------------------------------
+# Generation configuration
+# --------------------------------------------------------------------------
+[generation]
+# Blank for now
+
+# --------------------------------------------------------------------------
+# Export configuration
+# --------------------------------------------------------------------------
+[export]
+
+[export.daslight5]
+dlmfile = { 'TYPE' = 'Daslight', 'VERSION' = '5', 'DASBUILD' = '24.1016.154.85', 'VERSIONFILE' = '2' }
+configuration = {'VIEWZOOM' = '1', 'VIEWPOSX' = '200', 'VIEWPOSY' = '100', 'TOUCH_ZOOMS' = '1'}
+
+[export.daslight5.key]
+windows = 'C:\Users\Álvaro\Desktop\TFG\export\daslight5\key'
+linux = 'src/core/export/daslight5/key'
+
 # Fixture configuration
 [fixtures]
 
@@ -21,37 +64,6 @@ linux = '/home/alvaro/Descargas/_Generic/PAR 36.ssl2'
 windows = 'V:\Programas\Daslight\ScanLibrary\_Generic\Scanner.ssl2'
 linux = '/home/alvaro/Descargas/_Generic/Scanner.ssl2'
 
-# Analysis configuration
-[analysis.simpleAlgorithm]
 
-[analysis.simpleAlgorithm.aio]
-# out_dir = './analyzed' --> Not saving results
-visualize = false
-sonify = false
-include_activations = false
-include_embeddings = false
-demix_dir = './demix/htdemucs'
-overwrite = false
-multiprocess = true
 
-[analysis.simpleAlgorithm.bass]
-threshold_percentage = 0.025
-rms_params = { frame_length = 4096, hop_length = 1024 }
-display = false
-sonify = false
-save_dir = ''
 
-# Export configuration
-[export]
-
-[export.path]
-windows = '.\output'
-linux = './output'
-
-[export.daslight5]
-dlmfile = { 'TYPE' = 'Daslight', 'VERSION' = '5', 'DASBUILD' = '24.1016.154.85', 'VERSIONFILE' = '2' }
-configuration = {'VIEWZOOM' = '1', 'VIEWPOSX' = '200', 'VIEWPOSY' = '100', 'TOUCH_ZOOMS' = '1'}
-
-[export.daslight5.key]
-windows = 'C:\Users\Álvaro\Desktop\TFG\export\daslight5\key'
-linux = 'src/core/export/daslight5/key'
