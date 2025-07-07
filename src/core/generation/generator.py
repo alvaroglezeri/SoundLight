@@ -1,5 +1,3 @@
-from allin1.config import HARMONIX_LABELS
-
 from src.core.exceptions import InvalidStateException
 
 from ..model.song import Song
@@ -10,9 +8,19 @@ from ..model.features import *
 class IGenerationAlgorithm(ABC):
     """Interface that all generation algorithms must have.
     """
+
     @abstractmethod
-    def load_metadata(self, metadata: dict) -> None:
-        """Loads metadata into the generation for later use.
+    def set_song(self, song: Song) -> None:
+        """Sets the song to generate for. Must be set before generating.
+        """
+        pass
+
+    @abstractmethod
+    def get_keystring(self) -> str:
+        """Returns the key string to be used when searching for the config values of this algorithm.
+
+        Returns:
+            str: Key string
         """
         pass
 
@@ -91,7 +99,8 @@ class Generator():
 
         # TODO: Use the patch data to calculate which features to generate.
         song['patch'] = self._patch
-        self._generationAlgorithm.load_metadata(song['metadata'])
+        self._generationAlgorithm.set_song(song)
+        # self._generationAlgorithm.load_metadata(song['metadata'])
 
         song['features'] = self._generationAlgorithm.generate()
         # for feature in self._algorithm.generate():
