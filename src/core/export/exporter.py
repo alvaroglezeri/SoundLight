@@ -13,6 +13,21 @@ class IExportAlgorithm(ABC):
     """Interface that all export algorithms must have.
     """
 
+    @abstractmethod
+    def set_song(self, song: Song) -> None:
+        """Sets the song to export for. Must be set before exporting.
+        """
+        pass
+
+    @abstractmethod
+    def get_keystring(self) -> str:
+        """Returns the key string to be used when searching for the config values of this algorithm.
+
+        Returns:
+            str: Key string
+        """
+        pass
+
     @property
     @abstractmethod
     def file_extension(self) -> str:
@@ -24,20 +39,14 @@ class IExportAlgorithm(ABC):
         pass
 
     @abstractmethod
-    def export(self, song: Song) -> None:
+    def export(self) -> List[str] | BytesIO:
         """Starts the export.
 
-        Args:
-            song (Song): Dictionary with the data required for the export. Could be modified by this method.
-        """
-        pass
-
-    @abstractmethod
-    def get(self) -> List[str] | BytesIO:
-        """Returns the result of the export process.
-
         Returns:
-            List[str] | BytesIO: Either a list of strings, or a in-memory object, depending on the specific algorithm.
+            List[str] | BytesIO: The exported data. 
+            If the export is a text file, it should return a list of strings, each representing a line. 
+            If the export is a binary file, it should return a BytesIO object containing the binary data.
+
         """
         pass
 
@@ -102,8 +111,8 @@ class Exporter():
             Logger.log(LOG_CAT.INFO, f'Output file: {exportPath}')
 
             # Run the export process
-            self._exportAlgorithm.export(self._song)
-            ret = self._exportAlgorithm.get()
+            self._exportAlgorithm.set_song(self._song)
+            ret = self._exportAlgorithm.export()
 
             # Save results
             with open(exportPath, 'wb') as output:
