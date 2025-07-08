@@ -1,3 +1,4 @@
+""" List all test methods in Python files starting with 'test_' in a directory. """
 import os
 import ast
 
